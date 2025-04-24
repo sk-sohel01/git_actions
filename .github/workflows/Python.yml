@@ -31,6 +31,9 @@ jobs:
           echo $ACCESS_KEY
           echo $SECRET_KEY
           echo $test
+          env
+      
+
 
 
   test:
