@@ -25,5 +25,5 @@ jobs:
           sudo add-apt-repository --yes --update ppa:ansible/ansible
           sudo apt install -y ansible
           ansible --version
-          ansible-playbook -i ./ansible.yaml
+          ansible-playbook ./ansible.yaml
 
