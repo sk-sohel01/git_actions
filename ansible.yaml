@@ -1,0 +1,36 @@
+---
+- name: Deploy EC2 instance in AWS
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars:
+    aws_access_key: ${{ vars.ACCESS_KEY }}
+    aws_secret_key: ${{ vars.SECRET_KEY }}
+    region: us-east-1
+    instance_type: t2.micro
+    ami_id: ami-0c55b159cbfafe1f0  
+    user_data: |
+      #!/bin/bash
+      yum update -y
+      yum install -y docker
+      systemctl start docker
+      systemctl enable docker
+      curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+      chmod +x minikube
+      mv minikube /usr/local/bin/
+      minikube start --driver=none
+  tasks:
+    - name: Create EC2 instance
+      amazon.aws.ec2_instance:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        key_name: "{{ key_name }}"
+        security_groups: "{{ security_group }}"
+        user_data: "{{ user_data }}"
+        wait: yes
+        count: 1
+      register: ec2
