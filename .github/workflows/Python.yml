@@ -23,6 +23,11 @@ jobs:
           python test.py
           echo test, and deploy your project.
           mkdir akash
+          export ACCESS_KEY=${{ vars.ACCESS_KEY }}
+          export SECRET_KEY=${{ vars.SECRET_KEY }}
+          export test=welcome
+          echo $ACCESS_KEY
+          echo $test
 
   test:
     # The type of runner that the job will run on
