@@ -6,17 +6,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Set Environment Variable
-        run: echo "DEPLOY_ENV=Approvers" >> $GITHUB_ENV
-        
-      - name: Print Environment
-        run: echo "Environment is $DEPLOY_ENV"
+      - name: Build Application
+        run: echo "Building..."
+  
+      - name: Set Deployment Environment
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "DEPLOY_ENV=Production" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_ENV=Staging" >> $GITHUB_ENV
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: ${{ vars.DEPLOY_ENV }}
-
+    environment: ${{ env.DEPLOY_ENV }}  # Assign the dynamically selected environment
     steps:
-      - name: Print Environment
+      - name: Deploy Application
         run: echo "Deploying to $DEPLOY_ENV"
