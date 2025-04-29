@@ -25,7 +25,6 @@ jobs:
           ls -lrt
           export ACCESS_KEY=$ACCESS_KEY
           export SECRET_KEY=$SECRET_KEY
-          export ansible_python_interpreter = /opt/pipx/venvs/ansible-core/bin/python
           echo $env_var
           sudo apt update
           sudo apt upgrade -y
@@ -33,6 +32,5 @@ jobs:
           sudo add-apt-repository --yes --update ppa:ansible/ansible
           sudo apt install -y ansible
           ansible --version
-          pip install botocore boto3
           ansible-playbook ./ansible.yaml
         
