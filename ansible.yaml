@@ -28,9 +28,9 @@
         ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
         
     - name: Create EC2 instance
+      environment:
+        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
       amazon.aws.ec2_instance:
-        environment:
-          ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
         aws_access_key: "{{ aws_access_key }}"
         aws_secret_key: "{{ aws_secret_key }}"
         region: "{{ region }}"
