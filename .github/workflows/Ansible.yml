@@ -25,6 +25,8 @@ jobs:
           ls -lrt
           export ACCESS_KEY=$ACCESS_KEY
           export SECRET_KEY=$SECRET_KEY
+          export AWS_ACCESS_KEY_ID=$ACCESS_KEY
+          export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
           echo $ACCESS_KEY
           echo $SECRET_KEY
           sudo apt update
