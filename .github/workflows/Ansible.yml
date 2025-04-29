@@ -4,6 +4,9 @@ name: Ansible_deployment
 
 # Controls when the workflow will run
 on: workflow_dispatch
+env:
+  # Setting an environment variable with the value of a configuration variable
+  env_var: ${{ vars.ACCESS_KEY }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,6 +22,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -lrt
+          echo $env_var
           sudo apt update
           sudo apt upgrade -y
           sudo apt install -y software-properties-common
