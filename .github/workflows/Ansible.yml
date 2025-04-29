@@ -34,6 +34,8 @@ jobs:
           sudo apt install -y software-properties-common
           sudo add-apt-repository --yes --update ppa:ansible/ansible
           sudo apt install -y ansible
+          sudo apt update
+          sudo apt install python3-pip -y
           pip install awscli
           ansible --version
           ansible-playbook ./ansible.yaml -vvv
