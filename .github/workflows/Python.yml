@@ -11,51 +11,33 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    environment:
-      name: Approvers
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Run a multi-line script
+      - name: Step 1
+        run: echo "This step will pass"
+
+      - name: Step 2
         continue-on-error: true
-        env:
-          ACCESS_KEY: ${{ vars.ACCESS_KEY }}
-          SECRET_KEY: ${{ vars.SECRET_KEY }}
-          test: welcome
         run: |
-          ls -lrt
-          pwd
-          python test.py
-          echo test, and deploy your project.
-          mkdir akash
-          echo $ACCESS_KEY
-          echo $SECRET_KEY
-          echo $test
-          asdff
-      - name: variable
-        run: echo "step1_falied=true" >> $GITHUB_ENV
+          echo "This step will fail" && exit 1
+          asfdsgdhf
+
+      - name: Set Environment Variable
+        if: ${{ failure() }}
+        run: echo "STEP_2_FAILED=true" >> $GITHUB_ENV
+
+      - name: Manual Approval for Hello World
+        uses: trstringer/manual-approval@v1
+        with:
+          approvers: chandirasoodan
+          minimum-approvals: 1
+          issue-title: "Approval needed for Hello World step"
+          issue-body: "Please approve or deny the continuation to the Hello World step."
+        if: ${{ env.STEP_2_FAILED == 'true' }}
+
+      - name: Hello World
+        if: ${{ env.STEP_2_FAILED != 'true' || env.STEP_2_FAILED == 'true' && github.event.inputs.approval == 'true' }}
           
-
-      - name: Run a multi-line script
-        if: ${{ env.step1_failed == 'true' }}
-        run: |
-          echo previous step was skipped because of error
-          
-          
-      
-
-
-
-  test:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Run a multi-line script
-        run: |
-          ls -lrt
-          pwd
