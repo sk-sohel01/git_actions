@@ -5,8 +5,8 @@
   gather_facts: False
 
   vars:
-    aws_access_key: $ACCESS_KEY
-    aws_secret_key: $SECRET_KEY
+    aws_access_key: "${{ vars.ACCESS_KEY }}"
+    aws_secret_key: "${{ vars.SECRET_KEY }}"
     region: us-east-1
     instance_type: t2.micro
     ami_id: ami-0c55b159cbfafe1f0  
@@ -31,8 +31,8 @@
       environment:
         ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
       amazon.aws.ec2_instance:
-        aws_access_key: $ACCESS_KEY
-        aws_secret_key: $SECRET_KEY
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         region: us-east-1
         instance_type: "{{ instance_type }}"
         image_id: "{{ ami_id }}"
