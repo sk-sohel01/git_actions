@@ -11,13 +11,15 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
+    environment:
+      name: Approvers
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
       - name: Run a multi-line script
+        continue-on-error: true
         env:
           ACCESS_KEY: ${{ vars.ACCESS_KEY }}
           SECRET_KEY: ${{ vars.SECRET_KEY }}
@@ -31,7 +33,17 @@ jobs:
           echo $ACCESS_KEY
           echo $SECRET_KEY
           echo $test
-          env
+          asdff
+      - name: variable
+        run: echo "step1_falied=true" >> $GITHUB_ENV
+          
+
+      - name: Run a multi-line script
+        if: ${{ env.step1_failed == 'true' }}
+        run: |
+          echo previous step was skipped because of error
+          
+          
       
 
 
