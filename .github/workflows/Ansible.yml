@@ -6,7 +6,8 @@ name: Ansible_deployment
 on: workflow_dispatch
 env:
   # Setting an environment variable with the value of a configuration variable
-  env_var: ${{ vars.ACCESS_KEY }}
+  ACCESS_KEY: ${{ vars.ACCESS_KEY }}
+  SECRET_KEY: ${{ vars.SECRET_KEY }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,6 +23,9 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -lrt
+          export ACCESS_KEY=$ACCESS_KEY
+          export SECRET_KEY=$SECRET_KEY
+          export ansible_python_interpreter = /opt/pipx/venvs/ansible-core/bin/python
           echo $env_var
           sudo apt update
           sudo apt upgrade -y
@@ -29,5 +33,6 @@ jobs:
           sudo add-apt-repository --yes --update ppa:ansible/ansible
           sudo apt install -y ansible
           ansible --version
+          pip install botocore boto3
           ansible-playbook ./ansible.yaml
-
+        
