@@ -15,7 +15,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: ${{ env.DEPLOY_ENV }}
+    environment: ${{ vars.DEPLOY_ENV }}
 
     steps:
       - name: Print Environment
