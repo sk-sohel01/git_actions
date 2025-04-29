@@ -25,12 +25,14 @@ jobs:
           ls -lrt
           export ACCESS_KEY=$ACCESS_KEY
           export SECRET_KEY=$SECRET_KEY
-          echo $env_var
+          echo $ACCESS_KEY
+          echo $SECRET_KEY
           sudo apt update
           sudo apt upgrade -y
           sudo apt install -y software-properties-common
           sudo add-apt-repository --yes --update ppa:ansible/ansible
           sudo apt install -y ansible
+          sudo pip install awscli
           ansible --version
-          ansible-playbook ./ansible.yaml
+          ansible-playbook ./ansible.yaml -vvv
         
