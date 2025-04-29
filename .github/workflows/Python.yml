@@ -13,15 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Manual Approval for Hello World
-        uses: trstringer/manual-approval@v1
-        with:
-          approvers: chandirasoodan
-          minimum-approvals: 1
-          issue-title: "Approval needed for Hello World step"
-          issue-body: "Please approve or deny the continuation to the Hello World step."
-
       - name: Hello World
-        if: ${{ env.STEP_2_FAILED != 'true' || env.STEP_2_FAILED == 'true' && github.event.inputs.approval == 'true' }}
-        run: echo world
+        run: |
+          echo world
+          echo "build=Approvers" >> $GITHUB_ENV
+          
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    environment: env.build
+      
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Hello World
+        run: |
+          echo build world
           
