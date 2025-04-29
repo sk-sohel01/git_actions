@@ -29,8 +29,6 @@
         region: "{{ region }}"
         instance_type: "{{ instance_type }}"
         image_id: "{{ ami_id }}"
-        key_name: "{{ key_name }}"
-        security_groups: "{{ security_group }}"
         user_data: "{{ user_data }}"
         wait: yes
         count: 1
