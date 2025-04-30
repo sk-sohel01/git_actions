@@ -6,8 +6,8 @@ name: Ansible_deployment
 on: workflow_dispatch
 env:
   # Setting an environment variable with the value of a configuration variable
-  ACCESS_KEY: ${{ vars.ACCESS_KEY }}
-  SECRET_KEY: ${{ vars.SECRET_KEY }}
+  ACCESS_KEY: ${{ vars.AWS_ACCESS }}
+  SECRET_KEY: ${{ vars.AWS_SECRET }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
