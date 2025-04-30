@@ -22,8 +22,11 @@
            sudo apt install -y software-properties-common
            sudo add-apt-repository --yes --update ppa:ansible/ansible
            sudo apt install -y ansible python3-pip
-           pip install awscli
-           sudo apt  install awscli -y
+           sudo apt install pipx -y
+           pipx install awscli
+           export PATH=$PATH:/home/ubuntu/.local/bin
+
+
        - name: Set environment variables
          run: |
            export ACCESS_KEY=$ACCESS_KEY
