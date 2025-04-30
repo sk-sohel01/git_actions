@@ -37,5 +37,5 @@ jobs:
           sudo apt update
           sudo apt install python3-pip -y
           ansible --version
-          ansible-playbook ./ansible.yaml -vvv
+          ansible-playbook ./ansible.yaml
         
