@@ -34,8 +34,7 @@ jobs:
           sudo apt install -y software-properties-common
           sudo add-apt-repository --yes --update ppa:ansible/ansible
           sudo apt install -y ansible
-          python3 -m pip install --user pipx
-          python3 -m pipx ensurepath
+          /usr/bin/python3 -m pip install botocore boto3
           sudo apt update
           ansible --version
           ansible-playbook ./ansible.yaml -vvv
