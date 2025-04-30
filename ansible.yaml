@@ -21,13 +21,13 @@
       minikube start --driver=none
   tasks:       
     - name: Ensure correct Python interpreter
-      ansible.builtin.command: /usr/bin/python3 -m pip install botocore boto3
+      ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
       environment:
-        ansible_python_interpreter: /usr/bin/python3
+        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
          
     - name: Create EC2 instance
       environment:
-        ansible_python_interpreter: /usr/bin/python3
+        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
       amazon.aws.ec2_instance:
         region: us-east-1
         instance_type: "{{ instance_type }}"
