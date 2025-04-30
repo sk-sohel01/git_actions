@@ -1,0 +1,37 @@
+ name: Ansible_deployment
+
+ on: workflow_dispatch
+ env:
+   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
+   SECRET_KEY: ${{ vars.SECRET_KEY }}
+
+ jobs:
+   build:
+     runs-on: self-hosted
+
+     steps:
+       - uses: actions/checkout@v4
+       - name: Set up Python
+         uses: actions/setup-python@v2
+         with:
+           python-version: '3.x'
+       - name: Install dependencies
+         run: |
+           sudo apt update
+           sudo apt upgrade -y
+           sudo apt install -y software-properties-common
+           sudo add-apt-repository --yes --update ppa:ansible/ansible
+           sudo apt install -y ansible python3-pip
+           pip install botocore boto3
+       - name: Set environment variables
+         run: |
+           export ACCESS_KEY=${{ env.ACCESS_KEY }}
+           export SECRET_KEY=${{ env.SECRET_KEY }}
+           export AWS_ACCESS_KEY_ID=${{ env.ACCESS_KEY }}
+           export AWS_SECRET_ACCESS_KEY=${{ env.SECRET_KEY }}
+           echo $ACCESS_KEY
+           echo $SECRET_KEY
+       - name: Verify Ansible installation
+         run: ansible --version
+       - name: Run Ansible playbook
+         run: ansible-playbook ./ansible.yaml
