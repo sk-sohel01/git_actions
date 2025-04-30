@@ -32,4 +32,4 @@
        - name: Verify Ansible installation
          run: ansible --version
        - name: Run Ansible playbook
-         run: ansible-playbook ./ansible.yaml
+         run: ansible-playbook ./ansible.yaml -vvv
