@@ -36,8 +36,7 @@ jobs:
           sudo apt install -y ansible
           sudo apt update
           sudo apt install python3-pip -y
-          curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-          sudo /usr/bin/python3 get-pip.py
+          python3 -m pip install botocore boto3 -y
           ansible --version
           ansible-playbook ./ansible.yaml
         
