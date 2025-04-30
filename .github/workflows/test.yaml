@@ -23,7 +23,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -lrt
-          export ACCESS_KEY=${{ ACCESS }}
+          export ACCESS_KEY=${{ env.ACCESS }}
           export SECRET_KEY=$SECRET_KEY
           export AWS_ACCESS_KEY_ID=$ACCESS_KEY
           export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
