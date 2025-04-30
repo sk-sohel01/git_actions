@@ -1,31 +1,39 @@
- name: Ansible_deployment
+# This is a basic workflow to help you get started with Actions
 
- on: workflow_dispatch
- env:
-   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
-   SECRET_KEY: ${{ vars.SECRET_KEY }}
+name: Ansible_deployment
 
- jobs:
-   build:
-     runs-on: ubuntu-latest
+# Controls when the workflow will run
+on: workflow_dispatch
+env:
+  # Setting an environment variable with the value of a configuration variable
+  ACCESS_KEY: ${{ vars.ACCESS_KEY }}
+  SECRET_KEY: ${{ vars.SECRET_KEY }}
 
-     steps:
-       - uses: actions/checkout@v4
-       - name: Install dependencies
-         run: |
-           sudo apt update
-           sudo apt upgrade -y
-           sudo apt install -y software-properties-common
-           sudo add-apt-repository --yes --update ppa:ansible/ansible
-           sudo apt install -y ansible
-           
-       - name: Set environment variables
-         run: |
-           export ACCESS_KEY=$ACCESS_KEY
-           export SECRET_KEY=$SECRET_KEY
-           export AWS_ACCESS_KEY_ID=$ACCESS_KEY
-           export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
-       - name: Verify Ansible installation
-         run: ansible --version
-       - name: Run Ansible playbook
-         run: ansible-playbook ./ansible.yaml -vvv
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+      - name: Run a multi-line script
+        run: |
+          ls -lrt
+          export ACCESS_KEY=$ACCESS_KEY
+          export SECRET_KEY=$SECRET_KEY
+          export AWS_ACCESS_KEY_ID=$ACCESS_KEY
+          export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
+          echo $ACCESS_KEY
+          echo $SECRET_KEY
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository --yes --update ppa:ansible/ansible
+          sudo apt install -y ansible
+          pip install awscli
+          ansible --version
+          ansible-playbook ./ansible.yaml -vvv
