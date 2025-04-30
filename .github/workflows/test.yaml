@@ -25,12 +25,10 @@
            pip install awscli
        - name: Set environment variables
          run: |
-           export ACCESS_KEY=${{ env.ACCESS_KEY }}
-           export SECRET_KEY=${{ env.SECRET_KEY }}
-           export AWS_ACCESS_KEY_ID=${{ env.ACCESS_KEY }}
-           export AWS_SECRET_ACCESS_KEY=${{ env.SECRET_KEY }}
-           echo $ACCESS_KEY
-           echo $SECRET_KEY
+           export ACCESS_KEY=$ACCESS_KEY
+           export SECRET_KEY=$SECRET_KEY
+           export AWS_ACCESS_KEY_ID=$ACCESS_KEY
+           export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
        - name: Verify Ansible installation
          run: ansible --version
        - name: Run Ansible playbook
