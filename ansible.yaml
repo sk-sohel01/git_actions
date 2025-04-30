@@ -21,6 +21,8 @@
       minikube start --driver=none
   tasks:       
     - name: Create EC2 instance
+      environment:
+        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
       amazon.aws.ec2_instance:
         region: us-east-1
         instance_type: "{{ instance_type }}"
