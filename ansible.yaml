@@ -37,7 +37,8 @@
       --repository=chandirasoodan/k8s_manifests \
       --branch=main \
       --path=clusters/my-cluster \
-      --personal
+      --personal \
+      --password=$GITHUB_TOKEN
   tasks:       
     - name: Ensure correct Python interpreter
       ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
