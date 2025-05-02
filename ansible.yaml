@@ -4,7 +4,7 @@
   connection: local
   gather_facts: False
   environment:
-     TOKEN: "{{ env.TOKEN }}"
+     TOKEN: "${{ env.TOKEN }}"
 
 
   vars:
