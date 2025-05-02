@@ -23,16 +23,17 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -lrt
+          sudo apt update
+          sudo apt install ansible-core -y
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          sudo apt install unzip -y
+          unzip awscliv2.zip
+          sudo ./aws/install -y
           export ACCESS_KEY=$ACCESS_KEY
           export SECRET_KEY=$SECRET_KEY
           export AWS_ACCESS_KEY_ID=$ACCESS_KEY
           export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
           echo $ACCESS_KEY
           echo $SECRET_KEY
-          sudo apt update
-          sudo apt upgrade -y
-          sudo add-apt-repository --yes --update ppa:ansible/ansible
-          sudo apt install -y ansible
-          pip install awscli
           ansible --version
           ansible-playbook ./ansible.yaml -vvv
