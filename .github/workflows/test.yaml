@@ -35,5 +35,4 @@ jobs:
           echo $ACCESS_KEY
           echo $SECRET_KEY
           ansible --version
-          aws
           ansible-playbook ./ansible.yaml -vvv
