@@ -3,15 +3,13 @@
   hosts: localhost
   connection: local
   gather_facts: False
-  environment:
-     TOKEN: "${{ env.TOKEN }}"
 
 
   vars:
     region: us-east-1
     instance_type: t3.medium
     ami_id: ami-084568db4383264d4  
-    TOKEN: $TOKEN
+    TOKEN: 
     user_data: |
       #!/bin/bash
       sudo apt-get update
