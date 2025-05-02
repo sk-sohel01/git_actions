@@ -8,6 +8,7 @@ env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
   SECRET_KEY: ${{ vars.SECRET_KEY }}
+  TOKEN: ${{ vars.TOKEN }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -34,5 +35,6 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
           echo $ACCESS_KEY
           echo $SECRET_KEY
+          echo $TOKEN
           ansible --version
-          ansible-playbook ./ansible.yaml -vvv
+          ansible-playbook ./ansible.yaml -extra-vars "TOKEN=$TOKEN"
