@@ -20,6 +20,7 @@
       chmod +x minikube
       mv minikube /usr/local/bin/
       minikube --version
+      minikube start &
       flux bootstrap github \
       --token-auth \
       --owner=chandirasoodan \
@@ -27,7 +28,6 @@
       --branch=main \
       --path=clusters/my-cluster \
       --personal
-      minikube start --driver=none
   tasks:       
     - name: Ensure correct Python interpreter
       ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
