@@ -17,7 +17,8 @@
       sudo systemctl start docker
       sudo systemctl enable docker
       curl -s https://fluxcd.io/install.sh | sudo bash
-      echo 'export GITHUB_TOKEN=${{ TOKEN }}' >> ~/.bashrc
+      echo 'GITHUB_TOKEN=${{ TOKEN }}' | sudo tee -a /etc/environment
+      source /etc/environment
       source ~/.bashrc
       curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
       chmod +x minikube
@@ -31,7 +32,8 @@
       mv ./kubectl ~/.local/bin/kubectl
       mv minikube /usr/local/bin/
       minikube --version
-      minikube start --force
+      sleep 30 && minikube start
+      minikube start && sleep 30
       flux bootstrap github \
       --token-auth \
       --owner=chandirasoodan \
