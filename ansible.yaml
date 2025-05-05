@@ -32,8 +32,7 @@
       mv ./kubectl ~/.local/bin/kubectl
       mv minikube /usr/local/bin/
       minikube --version
-      sleep 30 && minikube start
-      minikube start && sleep 30
+      minikube start --force --driver=docker
       flux bootstrap github \
       --token-auth \
       --owner=chandirasoodan \
