@@ -30,7 +30,7 @@
       mv ./kubectl ~/.local/bin/kubectl
       mv minikube /usr/local/bin/
       minikube --version
-      minikube start &
+      minikube start --force
       flux bootstrap github \
       --token-auth \
       --owner=chandirasoodan \
