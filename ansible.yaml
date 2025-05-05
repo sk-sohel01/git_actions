@@ -17,7 +17,8 @@
       sudo systemctl start docker
       sudo systemctl enable docker
       curl -s https://fluxcd.io/install.sh | sudo bash
-      sudo export GITHUB_TOKEN=${{ TOKEN }}
+      echo 'export GITHUB_TOKEN=${{ TOKEN }}' >> ~/.bashrc
+      source ~/.bashrc
       curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
       chmod +x minikube
       sudo usermod -aG docker $USER && newgrp docker
