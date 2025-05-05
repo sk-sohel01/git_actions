@@ -12,6 +12,7 @@
     TOKEN: "{{ TOKEN }}"
     user_data: |
       #!/bin/bash
+      su - ubuntu
       sudo apt-get update
       sudo apt  install docker.io -y
       sudo systemctl start docker
