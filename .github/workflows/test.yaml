@@ -40,6 +40,8 @@ jobs:
             sudo apt  install docker.io -y
             sudo systemctl start docker
             sudo systemctl enable docker
+            pwd
+            ls -lrt
             echo "${{ secrets.DOCKER_USER }}" | docker login -u "${{ secrets.DOCKER_SECRET }}" --password-stdin
             docker build -t "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} .
             docker push "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }}
