@@ -41,8 +41,8 @@ jobs:
             sudo systemctl start docker
             sudo systemctl enable docker
             echo "${{ secrets.DOCKER_USER }}" | docker login -u "${{ secrets.DOCKER_SECRET }}" --password-stdin
-            docker build -t <your-dockerhub-username>/<image-name>:<tag> .
-            docker push <your-dockerhub-username>/<image-name>:<tag>
+            docker build -t "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} .
+            docker push "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }}
   
   # This workflow contains a single job called "build"
   build:
