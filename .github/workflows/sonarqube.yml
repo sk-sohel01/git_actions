@@ -8,13 +8,14 @@ env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
   SECRET_KEY: ${{ vars.SECRET_KEY }}
+  TOKEN: ${{ vars.TOKEN }}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -23,19 +24,17 @@ jobs:
       - name: Run a multi-line script
         run: |
           ls -lrt
+          sudo apt update
+          sudo apt install ansible-core -y
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          sudo apt install unzip -y
+          unzip awscliv2.zip
           export ACCESS_KEY=$ACCESS_KEY
           export SECRET_KEY=$SECRET_KEY
           export AWS_ACCESS_KEY_ID=$ACCESS_KEY
           export AWS_SECRET_ACCESS_KEY=$SECRET_KEY
           echo $ACCESS_KEY
           echo $SECRET_KEY
-          sudo apt update
-          sudo apt upgrade -y
-          sudo apt install -y software-properties-common
-          sudo add-apt-repository --yes --update ppa:ansible/ansible
-          sudo apt install -y ansible
-          sudo apt update
-          sudo apt install python3-pip -y
-          pip install botocore boto3 
+          echo $TOKEN
           ansible --version
-          ansible-playbook ./sonarqube.yaml
+          ansible-playbook ./sonarqube.yaml --extra-vars "TOKEN=test" -vvv
