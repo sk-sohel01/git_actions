@@ -32,6 +32,8 @@
         instance_type: "{{ instance_type }}"
         image_id: "{{ ami_id }}"
         user_data: "{{ user_data }}"
+        tags:
+          Name: static-runner
         volumes:
           - device_name: /dev/sda1
             ebs:
