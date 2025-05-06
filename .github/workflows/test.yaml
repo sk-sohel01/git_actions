@@ -37,13 +37,6 @@ jobs:
         - name: Run a multi-line script
           run: |
             sudo apt-get update
-            sudo apt remove containerd -y
-            sudo apt --fix-broken install
-            sudo apt autoremove -y
-            sudo apt clean
-            sudo apt  install docker.io -y
-            sudo systemctl start docker
-            sudo systemctl enable docker
             pwd
             ls -lrt
             echo "${{ secrets.DOCKER_USER }}" | docker login -u "${{ secrets.DOCKER_SECRET }}" --password-stdin
