@@ -61,7 +61,9 @@
         user_data: "{{ user_data }}"
         volumes:
           - device_name: /dev/sda1
-            volume_size: 30
+            ebs:
+              volume_size: 30
+              volume_type: gp3
         wait: yes
         count: 1
       register: ec2
