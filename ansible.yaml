@@ -39,6 +39,12 @@
       --branch=main \
       --path=clusters/my-cluster \
       --personal 
+      sudo apt install git -y
+      git --version
+      git clone https://github.com/RBC/finos-traderX.git
+      cd finos-traderX/
+      cd database/
+      docker build -t test-database .     
   tasks:       
     - name: Ensure correct Python interpreter
       ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
