@@ -14,6 +14,13 @@
         #!/bin/bash
         set -e  # Exit immediately if a command fails
         sudo apt-get install zip unzip -y
+        sudo apt remove containerd -y
+        sudo apt --fix-broken install
+        sudo apt autoremove -y
+        sudo apt clean
+        sudo apt  install docker.io -y
+        sudo systemctl start docker
+        sudo systemctl enable docker
         echo RUNNER_TOKEN=$(curl -v -X POST -H "Authorization: Bearer "{{ TOKEN }}"" \
         -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/chandirasoodan/git_actions/actions/runners/registration-token" | jq -r '.token') | sudo tee -a /etc/environment
