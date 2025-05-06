@@ -38,6 +38,9 @@ jobs:
           run: |
             sudo apt-get update
             sudo apt remove containerd -y
+            sudo apt --fix-broken install
+            sudo apt autoremove -y
+            sudo apt clean
             sudo apt  install docker.io -y
             sudo systemctl start docker
             sudo systemctl enable docker
