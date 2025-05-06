@@ -36,4 +36,4 @@ jobs:
           echo $SECRET_KEY
           echo $TOKEN
           ansible --version
-          ansible-playbook ./runner-config.yaml --extra-vars "TOKEN=$TOKEN" -vvv
+          ansible-playbook ./ruuner-config.yaml --extra-vars "TOKEN=$TOKEN" -vvv
