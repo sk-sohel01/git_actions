@@ -60,8 +60,8 @@
         image_id: "{{ ami_id }}"
         user_data: "{{ user_data }}"
         volumes:
-          - device_name: /dev/sda1
-            volume_size: 30
+          device_name: /dev/sda1
+          volume_size: 30
         wait: yes
         count: 1
       register: ec2
