@@ -1,0 +1,42 @@
+---
+- name: Deploy EC2 instance in AWS
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+
+  vars:
+    region: us-east-1
+    instance_type: t3.medium
+    ami_id: ami-084568db4383264d4  
+    TOKEN: "{{ TOKEN }}"
+    user_data: |
+      #!/bin/bash
+      mkdir actions-runner && cd actions-runner
+      curl -o actions-runner-linux-x64-2.323.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.323.0/actions-runner-linux-x64-2.323.0.tar.gz
+      echo "0dbc9bf5a58620fc52cb6cc0448abcca964a8d74b5f39773b7afcad9ab691e19  actions-runner-linux-x64-2.323.0.tar.gz" | shasum -a 256 -c
+      tar xzf ./actions-runner-linux-x64-2.323.0.tar.gz
+      ./config.sh --url https://github.com/chandirasoodan/git_actions --token "{{ TOKEN }}"
+      ./run.sh
+  tasks:       
+    - name: Ensure correct Python interpreter
+      ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
+      environment:
+        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
+         
+    - name: Create EC2 instance
+      environment:
+        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
+      amazon.aws.ec2_instance:
+        region: us-east-1
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        user_data: "{{ user_data }}"
+        volumes:
+          - device_name: /dev/sda1
+            ebs:
+              volume_size: 30
+              volume_type: gp3
+        wait: yes
+        count: 1
+      register: ec2
