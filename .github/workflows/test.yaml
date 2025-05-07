@@ -31,7 +31,13 @@ jobs:
     if: always()  # Runs only if SonarQube check fails
     steps:
       - name: Notify for Manual Approval
-        run: echo "SonarQube check failed. Please manually trigger the next stage."
+        run: |
+          if [[ "${{ needs.sonar_-scan.result }}" == "failure" ]]; then
+            echo "Approval required due to SonarQube failure."
+            exit 1
+          else
+            echo "No approval needed, proceeding..."
+          fi
   
   Docker-push:
       # The type of runner that the job will run on
