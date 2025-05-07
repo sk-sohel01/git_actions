@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Notify for Manual Approval
         run: |
-          if [[ "${{ needs.sonar_-scan.result }}" == "failure" ]]; then
+          if [[ "${{ needs.sonar-scan.result }}" == "failure" ]]; then
             echo "Approval required due to SonarQube failure."
             exit 1
           else
