@@ -24,6 +24,14 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          
+  approval:
+    needs: sonar-scan
+    runs-on: ubuntu-latest
+    if: failure()  # Runs only if SonarQube check fails
+    steps:
+      - name: Notify for Manual Approval
+        run: echo "SonarQube check failed. Please manually trigger the next stage."
   
   Docker-push:
       # The type of runner that the job will run on
