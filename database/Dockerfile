@@ -11,6 +11,7 @@ EXPOSE 18082
 EXPOSE 18083
 EXPOSE 18084
 
+RUN chmod +x gradlew
 RUN ./gradlew build
 RUN chmod +x ./run.sh
 ENTRYPOINT ./run.sh 
