@@ -33,8 +33,10 @@ jobs:
           
   approval:
     needs: sonar-scan
-    runs-on: ubuntu-latest
-    if: always()  # Runs only if SonarQube check fails
+    runs-on: self-hosted
+    environment:
+      name: Approvers
+    if: failure()  # Runs only if SonarQube check fails
     steps:
       - name: Notify for Manual Approval
         run: |
