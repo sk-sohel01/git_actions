@@ -39,7 +39,7 @@ jobs:
             sudo apt-get update
             pwd
             ls -lrt
-            sudo docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin "${{ secrets.DOCKER_SECRET }}"
+            sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
             sudo docker build -t "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} ./database
             sudo docker push "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} 
   
