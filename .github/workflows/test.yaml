@@ -40,8 +40,8 @@ jobs:
             pwd
             ls -lrt
             echo "${{ secrets.DOCKER_SECRET }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
-            docker build -t "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} ./database
-            docker push "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }}
+            sudo docker build -t "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} ./database
+            sudo docker push "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }}
   
   # This workflow contains a single job called "build"
   build:
