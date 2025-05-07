@@ -28,7 +28,7 @@ jobs:
   approval:
     needs: sonar-scan
     runs-on: ubuntu-latest
-    if: failure()  # Runs only if SonarQube check fails
+    if: always()  # Runs only if SonarQube check fails
     steps:
       - name: Notify for Manual Approval
         run: echo "SonarQube check failed. Please manually trigger the next stage."
