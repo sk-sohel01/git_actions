@@ -45,15 +45,8 @@
       cd finos-traderX/
       cd database/
       docker build -t test-database .     
-  tasks:       
-    - name: Ensure correct Python interpreter
-      ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
-      environment:
-        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
-         
+  tasks:               
     - name: Create EC2 instance
-      environment:
-        ansible_python_interpreter: /opt/pipx/venvs/ansible-core/bin/python
       amazon.aws.ec2_instance:
         region: us-east-1
         instance_type: "{{ instance_type }}"
