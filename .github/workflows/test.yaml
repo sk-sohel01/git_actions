@@ -48,9 +48,8 @@ jobs:
   
   Docker-push:
       # The type of runner that the job will run on
-      needs: approval
+      needs: [approval,sonar-scan]
       runs-on: self-hosted
-      if: always()
   
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
@@ -68,9 +67,9 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    needs: [Docker-push]
+    needs: Docker-push
     runs-on: self-hosted
-    if: success()
+    if: 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
