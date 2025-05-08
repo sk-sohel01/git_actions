@@ -1,17 +1,15 @@
 # This is a basic workflow to help you get started with Actions
 
-
 name: Demo-deployment
 
 on:
   workflow_dispatch:
     inputs:
-      steps:
-        description: 'Select steps to run'
-        required: true
-        default: 'sonar-scan,approval,Docker-push,build'
-        type: string
-
+      steps:
+        description: 'Select steps to run'
+        required: true
+        default: 'sonar-scan,approval,Docker-push,build'
+        type: string
 env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
