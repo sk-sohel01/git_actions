@@ -5,11 +5,12 @@ name: Demo-deployment
 on:
   workflow_dispatch:
     inputs:
-      steps:
-        description: 'Select steps to run'
-        required: true
-        default: 'sonar-scan,approval,Docker-push,build'
-        type: string
+      service1:
+        type: boolean
+        description: Select Service1 to Deploy
+      service2:
+        type: boolean
+        description: Select Service2 to Deploy
 env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
