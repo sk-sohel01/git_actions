@@ -16,6 +16,8 @@ jobs:
   sonar-scan:
     name: sonar-scan
     runs-on: self-hosted
+    environment:
+      name: 
     steps:
       - uses: actions/checkout@v2
         with:
