@@ -5,12 +5,10 @@ name: Demo-deployment
 on:
   workflow_dispatch:
     inputs:
-      database:
-        type: boolean
+      services:
+        type: string
         description: database
-      reference-data:
-        type: boolean
-        description: reference-data
+        default: "database,reference-data"
 env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
@@ -60,21 +58,22 @@ jobs:
       if: always()
   
       # Steps represent a sequence of tasks that will be executed as part of the job
-      strategy:
-        matrix:
-          service: ["database", "reference-data"]
       steps:
         - uses: actions/checkout@v4
         - name: Conditional execution based on checkbox selection
-          if: ${{ inputs[matrix.service] }}
           run: |
-            echo "Deploying ${{ matrix.service }}"
-            sudo apt-get update
-            pwd
-            ls -lrt
-            sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
-            sudo docker build -t "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} ./traderX/${{ matrix.service }}
-            sudo docker push "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} 
+            IFS=',' read -ra SERVICES_ARRAY <<< "${{ inputs.services }}"
+            for service in "${SERVICES_ARRAY[@]}"; do
+              echo "Deploying $service"
+              sudo apt-get update
+              pwd
+              ls -lrt
+              sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
+              sudo docker build -t "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }} ./$service
+              sudo docker push "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }}
+            done
+
+
   
   # This workflow contains a single job called "build"
   build:
