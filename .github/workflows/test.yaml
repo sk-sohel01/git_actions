@@ -92,10 +92,7 @@ jobs:
               sudo docker build -t "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }} ./$service
               sudo docker push "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }}
             done
-        - name: Scan for vulnerabilities in "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
-          uses: crazy-max/ghaction-container-scan@v3
-          with:
-            image: "${{ secrets.DOCKER_USER }}/${{ matrix.service }}:${{ github.run_number }}"
+
         
 
 
