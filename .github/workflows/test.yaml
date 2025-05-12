@@ -7,7 +7,7 @@ on:
     inputs:
       selected_services:
         type: string
-        description: "Comma-separated list of services to deploy (e.g., service1,service5,service10)"
+        description: "Comma-separated list of services to deploy"
         default: ""
 
 
@@ -87,6 +87,7 @@ jobs:
             for service in "${SERVICES_ARRAY[@]}"; do
               echo "Deploying $service"
               sudo apt-get update
+              export DOCKER_BUILDKIT=1
               sudo usermod -aG docker ubuntu && newgrp docker
               sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
               sudo docker build -t "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }} ./$service
