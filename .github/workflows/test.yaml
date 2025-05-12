@@ -60,17 +60,21 @@ jobs:
       if: always()
   
       # Steps represent a sequence of tasks that will be executed as part of the job
+      strategy:
+        matrix:
+          service: ["service1", "service2"]
       steps:
-        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v4
-        - name: Run a multi-line script
+        - name: Conditional execution based on checkbox selection
+          if: ${{ inputs[matrix.service] }}
           run: |
+            echo "Deploying ${{ matrix.service }}"
             sudo apt-get update
             pwd
             ls -lrt
             sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
-            sudo docker build -t "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} ./database
-            sudo docker push "${{ secrets.DOCKER_USER }}"/database:${{ github.run_number }} 
+            sudo docker build -t "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} ./${{ matrix.service }}
+            sudo docker push "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} 
   
   # This workflow contains a single job called "build"
   build:
