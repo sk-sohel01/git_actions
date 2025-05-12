@@ -5,12 +5,12 @@ name: Demo-deployment
 on:
   workflow_dispatch:
     inputs:
-      service1:
+      database:
         type: boolean
-        description: Select Service1 to Deploy
-      service2:
+        description: database
+      reference-data:
         type: boolean
-        description: Select Service2 to Deploy
+        description: reference-data
 env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
