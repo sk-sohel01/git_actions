@@ -62,7 +62,7 @@ jobs:
       # Steps represent a sequence of tasks that will be executed as part of the job
       strategy:
         matrix:
-          service: ["service1", "service2"]
+          service: ["database", "reference-data"]
       steps:
         - uses: actions/checkout@v4
         - name: Conditional execution based on checkbox selection
