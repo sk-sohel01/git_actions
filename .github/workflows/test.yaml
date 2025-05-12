@@ -60,9 +60,6 @@ jobs:
       needs: approval
       runs-on: self-hosted
       if: always()
-      strategy:
-        matrix:
-          service: ["database", "reference-data"]
 
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
@@ -97,7 +94,7 @@ jobs:
         - name: Scan for vulnerabilities in "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
           uses: crazy-max/ghaction-container-scan@v3
           with:
-            image: "${{ secrets.DOCKER_USER }}/${{ matrix.service }}:${{ github.run_number }}"
+            image: "sudo docker ${{ secrets.DOCKER_USER }}/${{ matrix.service }}:${{ github.run_number }}"
         
 
 
