@@ -80,7 +80,6 @@ jobs:
     # The type of runner that the job will run on
     needs: Docker-push
     runs-on: self-hosted
-    if: success()
     continue-on-error: false
 
     # Steps represent a sequence of tasks that will be executed as part of the job
