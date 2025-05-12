@@ -5,12 +5,12 @@ name: Demo-deployment
 on:
   workflow_dispatch:
     inputs:
-      database:
-        type: boolean
-        description: database
-      reference-data:
-        type: boolean
-        description: reference-data
+      selected_services:
+        type: string
+        description: "Comma-separated list of services to deploy (e.g., service1,service5,service10)"
+        default: ""
+
+
 
 
 env:
@@ -62,20 +62,38 @@ jobs:
       if: always()
       strategy:
         matrix:
-          service: ${{ fromJSON('["database", "reference-data"]') }}
+          service: ["database", "reference-data"]
 
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
         - uses: actions/checkout@v4
-        - name: Conditional execution based on checkbox selection
+        - name: Load Services from JSON
+          id: services_list
           run: |
-            sudo apt-get update
-            pwd
-            ls -lrt
-            sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
-            sudo docker build -t "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} ./${{ matrix.service }}
-            sudo docker push "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
-        
+            SERVICES_JSON=$(cat services.json | jq -r '.services | join(",")')
+            echo "SERVICES=$SERVICES_JSON" >> $GITHUB_ENV
+
+        - name: Filter Selected Services
+          run: |
+            SELECTED_SERVICES="${{ inputs.selected_services }}"
+            if [ -z "$SELECTED_SERVICES" ]; then
+              echo "No specific services selected. Deploying all."
+              SERVICES=$SERVICES_JSON
+            else
+              SERVICES=$SELECTED_SERVICES
+            fi
+            echo "SERVICES=$SERVICES" >> $GITHUB_ENV
+
+        - name: Deploy Selected Services
+          run: |
+            IFS=',' read -ra SERVICES_ARRAY <<< "$SERVICES"
+            for service in "${SERVICES_ARRAY[@]}"; do
+              echo "Deploying $service"
+              sudo apt-get update
+              sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
+              sudo docker build -t "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }} ./$service
+              sudo docker push "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }}
+            done
         - name: Scan for vulnerabilities in "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
           uses: crazy-max/ghaction-container-scan@v3
           with:
