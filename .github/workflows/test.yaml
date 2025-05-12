@@ -87,6 +87,7 @@ jobs:
             for service in "${SERVICES_ARRAY[@]}"; do
               echo "Deploying $service"
               sudo apt-get update
+              sudo usermod -aG docker ubuntu && newgrp docker
               sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
               sudo docker build -t "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }} ./$service
               sudo docker push "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }}
@@ -94,7 +95,7 @@ jobs:
         - name: Scan for vulnerabilities in "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
           uses: crazy-max/ghaction-container-scan@v3
           with:
-            image: "sudo docker ${{ secrets.DOCKER_USER }}/${{ matrix.service }}:${{ github.run_number }}"
+            image: "${{ secrets.DOCKER_USER }}/${{ matrix.service }}:${{ github.run_number }}"
         
 
 
