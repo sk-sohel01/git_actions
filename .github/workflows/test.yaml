@@ -7,10 +7,10 @@ on:
     inputs:
       database:
         type: boolean
-        description: Select Service1 to Deploy
+        description: database
       reference-data:
         type: boolean
-        description: Select Service2 to Deploy
+        description: reference-data
 
 
 env:
