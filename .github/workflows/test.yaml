@@ -5,10 +5,14 @@ name: Demo-deployment
 on:
   workflow_dispatch:
     inputs:
-      services:
-        type: string
-        description: database
-        default: "database,reference-data"
+      database:
+        type: boolean
+        description: Select Service1 to Deploy
+      reference-data:
+        type: boolean
+        description: Select Service2 to Deploy
+
+
 env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
@@ -56,22 +60,27 @@ jobs:
       needs: approval
       runs-on: self-hosted
       if: always()
-  
+      strategy:
+        matrix:
+          service: ${{ fromJSON('["database", "reference-data"]') }}
+
       # Steps represent a sequence of tasks that will be executed as part of the job
       steps:
         - uses: actions/checkout@v4
         - name: Conditional execution based on checkbox selection
           run: |
-            IFS=',' read -ra SERVICES_ARRAY <<< "${{ inputs.services }}"
-            for service in "${SERVICES_ARRAY[@]}"; do
-              echo "Deploying $service"
-              sudo apt-get update
-              pwd
-              ls -lrt
-              sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
-              sudo docker build -t "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }} ./$service
-              sudo docker push "${{ secrets.DOCKER_USER }}"/$service:${{ github.run_number }}
-            done
+            sudo apt-get update
+            pwd
+            ls -lrt
+            sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
+            sudo docker build -t "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} ./${{ matrix.service }}
+            sudo docker push "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
+        
+        - name: Scan for vulnerabilities in "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }}
+          uses: crazy-max/ghaction-container-scan@v3
+          with:
+            image: "${{ secrets.DOCKER_USER }}/${{ matrix.service }}:${{ github.run_number }}"
+        
 
 
   
