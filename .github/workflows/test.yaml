@@ -73,7 +73,7 @@ jobs:
             pwd
             ls -lrt
             sudo docker login -u "${{ secrets.DOCKER_USER }}" -p "${{ secrets.DOCKER_SECRET }}"
-            sudo docker build -t "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} ./tradeX/${{ matrix.service }}
+            sudo docker build -t "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} ./traderX/${{ matrix.service }}
             sudo docker push "${{ secrets.DOCKER_USER }}"/${{ matrix.service }}:${{ github.run_number }} 
   
   # This workflow contains a single job called "build"
