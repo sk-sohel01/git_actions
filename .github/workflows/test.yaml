@@ -82,6 +82,8 @@ jobs:
     runs-on: self-hosted
     if: always()
     continue-on-error: false
+    environment:
+      name: Approvers
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
