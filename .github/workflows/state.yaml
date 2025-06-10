@@ -12,7 +12,6 @@ jobs:
 
       - name: Build
         run: make build
-        continue-on-error: true
       
       - name: Save state
         if: failure()
