@@ -1,0 +1,26 @@
+name: state
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: make build
+        continue-on-error: true
+      
+      - name: Save state
+        if: failure()
+        run: echo '{}' | jq '.stage="build" | .status="failed"' > state.json
+        
+      - name: Upload state
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: state
+          path: state.json
