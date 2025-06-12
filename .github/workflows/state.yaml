@@ -1,4 +1,4 @@
-name: JSON File Update Pipeline
+name: Stateful JSON Pipeline
 
 on:
   workflow_dispatch:
@@ -7,8 +7,10 @@ on:
       - main
 
 jobs:
-  manage_json:
+  initialize:
     runs-on: ubuntu-latest
+    outputs:
+      last_failed_stage: ${{ steps.read-state.outputs.stage }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -20,16 +22,64 @@ jobs:
           fi
         shell: bash
 
-      - name: Add key-value pair to JSON file
+      - name: Read last failed stage
+        id: read-state
         run: |
-          jq '. + {"stage1": "success"}' state.json > tmp.json && mv tmp.json state.json
+          if [ -f state.json ]; then
+            LAST_FAILED_STAGE=$(jq -r 'to_entries | map(select(.value == "failed")) | .[0].key' state.json)
+            echo "Last failed stage: $LAST_FAILED_STAGE"
+            echo "stage=$LAST_FAILED_STAGE" >> $GITHUB_ENV
+          else
+            echo "stage=none" >> $GITHUB_ENV
         shell: bash
 
-      - name: Update JSON file with new key-value pair
+  stage1:
+    needs: initialize
+    if: ${{ needs.initialize.outputs.last_failed_stage == 'none' || needs.initialize.outputs.last_failed_stage == 'stage1' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Stage 1
         run: |
-          jq '. + {"stage2": "failed"}' state.json > tmp.json && mv tmp.json state.json
+          echo "Running Stage 1"
+          # Simulate failure
+          exit 1
         shell: bash
 
-      - name: Display JSON file contents
-        run: cat state.json
+      - name: Save failure state
+        if: ${{ failure() }}
+        run: |
+          jq '.stage1 = "failed"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
+
+      - name: Save success state
+        if: ${{ success() }}
+        run: |
+          jq '.stage1 = "success"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
+
+  stage2:
+    needs: stage1
+    if: ${{ needs.initialize.outputs.last_failed_stage == 'stage2' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Stage 2
+        run: echo "Running Stage 2"
+        shell: bash
+
+      - name: Save success state
+        run: |
+          jq '.stage2 = "success"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
+
+  stage3:
+    needs: stage2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Stage 3
+        run: echo "Running Stage 3"
+        shell: bash
+
+      - name: Save success state
+        run: |
+          jq '.stage3 = "success"' state.json > tmp.json && mv tmp.json state.json
         shell: bash
