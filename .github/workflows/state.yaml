@@ -19,12 +19,12 @@ jobs:
         id: read-state
         run: |
           if [ -f state.json ]; then
-            LAST_STAGE=$(jq -r '.last_stage' state.json)
+            LAST_STAGE=$(jq -r 'to_entries | map(select(.value == "failed")) | .[0].key' state.json)
             echo "Last failed stage: $LAST_STAGE"
             echo "stage=$LAST_STAGE" >> $GITHUB_ENV
           else
             echo "stage=none" >> $GITHUB_ENV
-          fi
+        shell: bash
 
   stage1:
     needs: initialize
@@ -36,10 +36,19 @@ jobs:
           echo "Running Stage 1"
           # Simulate failure
           exit 1
+        shell: bash
 
       - name: Save failure state
-        if: failure()
-        run: echo "{"last_stage:" "stage1"}" | tee state.json
+        if: ${{ failure() }}
+        run: |
+          jq '.stage1 = "failed"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
+
+      - name: Save success state
+        if: ${{ success() }}
+        run: |
+          jq '.stage1 = "success"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
 
   stage2:
     needs: stage1
@@ -48,9 +57,12 @@ jobs:
     steps:
       - name: Execute Stage 2
         run: echo "Running Stage 2"
+        shell: bash
 
       - name: Save success state
-        run: echo '{"last_stage"":" "stage2"}' > state.json
+        run: |
+          jq '.stage2 = "success"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
 
   stage3:
     needs: stage2
@@ -58,6 +70,9 @@ jobs:
     steps:
       - name: Execute Stage 3
         run: echo "Running Stage 3"
+        shell: bash
 
       - name: Save success state
-        run: echo '{"last_stage"":" "completed"}' > state.json
+        run: |
+          jq '.stage3 = "success"' state.json > tmp.json && mv tmp.json state.json
+        shell: bash
