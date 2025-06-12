@@ -7,10 +7,8 @@ on:
       - main
 
 jobs:
-  initialize:
+  stage1:
     runs-on: ubuntu-latest
-    outputs:
-      last_failed_stage: ${{ steps.read-state.outputs.stage }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -22,65 +20,102 @@ jobs:
           fi
         shell: bash
 
-      - name: Read last failed stage
-        id: read-state
+      - name: Check if Stage 1 needs to run
+        id: check_stage1
         run: |
-          if [ -f state.json ]; then
-            LAST_FAILED_STAGE=$(jq -r 'to_entries | map(select(.value == "failed")) | .[0].key' state.json)
-            echo "Last failed stage: $LAST_FAILED_STAGE"
-            echo "stage=$LAST_FAILED_STAGE" >> $GITHUB_ENV
-          else
-            echo "stage=none" >> $GITHUB_ENV
+          STAGE_STATUS=$(jq -r '.stage1 // "pending"' state.json)
+          echo "Stage 1 status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "run_stage1=true" >> $GITHUB_ENV
           fi
         shell: bash
 
-  stage1:
-    needs: initialize
-    if: ${{ needs.initialize.outputs.last_failed_stage == 'none' }}
-    runs-on: ubuntu-latest
-    steps:
       - name: Execute Stage 1
+        if: ${{ env.run_stage1 == 'true' }}
         run: |
           echo "Running Stage 1"
           # Simulate failure
           exit 1
         shell: bash
 
-      - name: Save failure state
+      - name: Update state file for Stage 1
         if: ${{ failure() }}
         run: |
           jq '.stage1 = "failed"' state.json > tmp.json && mv tmp.json state.json
         shell: bash
 
-      - name: Save success state
+      - name: Update state file for Stage 1 (Success)
         if: ${{ success() }}
         run: |
           jq '.stage1 = "success"' state.json > tmp.json && mv tmp.json state.json
         shell: bash
 
+      - name: Upload state.json
+        uses: actions/upload-artifact@v3
+        with:
+          name: state-file
+          path: state.json
+
   stage2:
     needs: stage1
-    if: ${{ needs.initialize.outputs.last_failed_stage == 'stage2' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Download state.json
+        uses: actions/download-artifact@v3
+        with:
+          name: state-file
+
+      - name: Check if Stage 2 needs to run
+        id: check_stage2
+        run: |
+          STAGE_STATUS=$(jq -r '.stage2 // "pending"' state.json)
+          echo "Stage 2 status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "run_stage2=true" >> $GITHUB_ENV
+          fi
+        shell: bash
+
       - name: Execute Stage 2
+        if: ${{ env.run_stage2 == 'true' }}
         run: echo "Running Stage 2"
         shell: bash
 
-      - name: Save success state
+      - name: Update state file for Stage 2
         run: |
           jq '.stage2 = "success"' state.json > tmp.json && mv tmp.json state.json
         shell: bash
+
+      - name: Upload updated state.json
+        uses: actions/upload-artifact@v3
+        with:
+          name: state-file
+          path: state.json
 
   stage3:
     needs: stage2
     runs-on: ubuntu-latest
     steps:
+      - name: Download state.json
+        uses: actions/download-artifact@v3
+        with:
+          name: state-file
+
+      - name: Check if Stage 3 needs to run
+        id: check_stage3
+        run: |
+          STAGE_STATUS=$(jq -r '.stage3 // "pending"' state.json)
+          echo "Stage 3 status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "run_stage3=true" >> $GITHUB_ENV
+          fi
+        shell: bash
+
       - name: Execute Stage 3
+        if: ${{ env.run_stage3 == 'true' }}
         run: echo "Running Stage 3"
         shell: bash
 
-      - name: Save success state
+      - name: Update state file for Stage 3
         run: |
           jq '.stage3 = "success"' state.json > tmp.json && mv tmp.json state.json
         shell: bash
