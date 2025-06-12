@@ -15,16 +15,17 @@ jobs:
 
       - name: Create JSON file (if not exists)
         run: |
-          if [ ! -f state.json ]; then
-            echo '{}' > state.json
+          mkdir -p /tmp/pipeline-state
+          if [ ! -f /tmp/pipeline-state/state.json ]; then
+            echo '{}' > /tmp/pipeline-state/state.json
           fi
-          ls -lrt
+          ls --pathlrt
         shell: bash
 
       - name: Check if Stage 1 needs to run
         id: check_stage1
         run: |
-          STAGE_STATUS=$(jq -r '.stage1 // "pending"' state.json)
+          STAGE_STATUS=$(jq -r '.stage1 // "pending"' /tmp/pipeline-state/state.json)
           echo "Stage 1 status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "run_stage1=true" >> $GITHUB_ENV
@@ -40,13 +41,13 @@ jobs:
       - name: Update state file for Stage 1
         if: ${{ failure() }}
         run: |
-          jq '.stage1 = "failed"' state.json > tmp.json && mv tmp.json state.json
+          jq '.stage1 = "failed"' /tmp/pipeline-state/state.json > tmp.json && mv tmp.json /tmp/pipeline-state/state.json
         shell: bash
 
       - name: Update state file for Stage 1 (Success)
         if: ${{ success() }}
         run: |
-          jq '.stage1 = "success"' state.json > tmp.json && mv tmp.json state.json
+          jq '.stage1 = "success"' /tmp/pipeline-state/state.json > tmp.json && mv tmp.json /tmp/pipeline-state/state.json
         shell: bash
 
       - name: Upload state.json
@@ -67,7 +68,7 @@ jobs:
       - name: Check if Stage 2 needs to run
         id: check_stage2
         run: |
-          STAGE_STATUS=$(jq -r '.stage2 // "pending"' state.json)
+          STAGE_STATUS=$(jq -r '.stage2 // "pending"' /tmp/pipeline-state/state.json)
           echo "Stage 2 status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "run_stage2=true" >> $GITHUB_ENV
