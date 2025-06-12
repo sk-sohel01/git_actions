@@ -16,6 +16,7 @@ jobs:
       - name: Create JSON file (if not exists)
         run: |
           mkdir -p /tmp/pipeline-state
+          sha256sum /tmp/pipeline-state/state.json
           if [ ! -f /tmp/pipeline-state/state.json ]; then
             echo '{}' > /tmp/pipeline-state/state.json
           fi
