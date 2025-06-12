@@ -31,6 +31,7 @@ jobs:
             echo "stage=$LAST_FAILED_STAGE" >> $GITHUB_ENV
           else
             echo "stage=none" >> $GITHUB_ENV
+          fi
         shell: bash
 
   stage1:
