@@ -1,33 +1,63 @@
-name: state
+name: Stateful GitHub Actions Workflow
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  build:
+  initialize:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    outputs:
+      last_stage: ${{ steps.read-state.outputs.stage }}
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: state
-          path: state.json
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Build
+      - name: Read last execution state
+        id: read-state
         run: |
-          ls -lrt
-          make build
-      
-      - name: Save state
+          if [ -f state.json ]; then
+            LAST_STAGE=$(jq -r '.last_stage' state.json)
+            echo "Last failed stage: $LAST_STAGE"
+            echo "stage=$LAST_STAGE" >> $GITHUB_ENV
+          else
+            echo "stage=none" >> $GITHUB_ENV
+          fi
+
+  stage1:
+    needs: initialize
+    if: ${{ needs.initialize.outputs.last_stage == 'none' || needs.initialize.outputs.last_stage == 'stage1' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Stage 1
+        run: |
+          echo "Running Stage 1"
+          # Simulate failure
+          exit 1
+
+      - name: Save failure state
         if: failure()
-        run: echo '{}' | jq '.stage="build" | .status="failed"' > state.json
-        
-      - name: Upload state
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: state
-          path: state.json
+        run: echo "{"last_stage:" "stage1"}" | tee state.json
+
+  stage2:
+    needs: stage1
+    if: ${{ needs.initialize.outputs.last_stage == 'stage2' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Stage 2
+        run: echo "Running Stage 2"
+
+      - name: Save success state
+        run: echo '{"last_stage"":" "stage2"}' > state.json
+
+  stage3:
+    needs: stage2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute Stage 3
+        run: echo "Running Stage 3"
+
+      - name: Save success state
+        run: echo '{"last_stage"":" "completed"}' > state.json
