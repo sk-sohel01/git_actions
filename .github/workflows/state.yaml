@@ -51,7 +51,7 @@ jobs:
         shell: bash
 
       - name: Upload state.json
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: state-file
           path: state.json
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download state.json
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: state-file
 
@@ -96,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download state.json
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: state-file
 
