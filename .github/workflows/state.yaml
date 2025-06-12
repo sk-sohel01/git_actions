@@ -17,7 +17,7 @@ jobs:
         run: |
           mkdir -p /tmp/pipeline-state
           sha256sum services.json
-          sha256sum services.json | awk '${print $1}'
+          sha256sum services.json | awk '{print $1}'
           if [ ! -f /tmp/pipeline-state/state.json ]; then
             echo '{}' > /tmp/pipeline-state/state.json
           fi
