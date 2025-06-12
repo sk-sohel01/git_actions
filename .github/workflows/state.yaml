@@ -19,7 +19,6 @@ jobs:
           if [ ! -f /tmp/pipeline-state/state.json ]; then
             echo '{}' > /tmp/pipeline-state/state.json
           fi
-          ls --pathlrt
         shell: bash
 
       - name: Check if Stage 1 needs to run
