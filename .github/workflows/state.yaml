@@ -34,8 +34,6 @@ jobs:
         if: ${{ env.run_stage1 == 'true' }}
         run: |
           echo "Running Stage 1"
-          # Simulate failure
-          exit 1
         shell: bash
 
       - name: Update state file for Stage 1
