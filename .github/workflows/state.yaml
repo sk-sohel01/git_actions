@@ -41,13 +41,13 @@ jobs:
       - name: Save failure state
         if: ${{ failure() }}
         run: |
-          jq '.stage1 = "failed"' state.json > tmp.json && mv tmp.json state.json
+          echo '{"stage1": "failed"}' > state.json
         shell: bash
 
       - name: Save success state
         if: ${{ success() }}
         run: |
-          jq '.stage1 = "success"' state.json > tmp.json && mv tmp.json state.json
+          echo '{"stage1": "success"}' > state.json
         shell: bash
 
   stage2:
@@ -61,7 +61,7 @@ jobs:
 
       - name: Save success state
         run: |
-          jq '.stage2 = "success"' state.json > tmp.json && mv tmp.json state.json
+          echo '{"stage2": "success"}' > state.json
         shell: bash
 
   stage3:
@@ -74,5 +74,5 @@ jobs:
 
       - name: Save success state
         run: |
-          jq '.stage3 = "success"' state.json > tmp.json && mv tmp.json state.json
+          echo '{"stage3": "success"}' > state.json
         shell: bash
