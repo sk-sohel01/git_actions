@@ -18,7 +18,7 @@ jobs:
           if [ ! -f state.json ]; then
             echo '{}' > state.json
           fi
-          ls lrt
+          ls -lrt
         shell: bash
 
       - name: Check if Stage 1 needs to run
