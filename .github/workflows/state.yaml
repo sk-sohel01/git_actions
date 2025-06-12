@@ -81,11 +81,11 @@ jobs:
 
       - name: Update state file for Stage 2
         run: |
-          jq '.stage2 = "success"' state.json > tmp.json && mv tmp.json state.json
+          jq '.stage2 = "success"' /tmp/pipeline-state/state.json > tmp.json && mv tmp.json /tmp/pipeline-state/state.json
         shell: bash
 
       - name: Upload updated state.json
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: state-file
           path: state.json
@@ -102,7 +102,7 @@ jobs:
       - name: Check if Stage 3 needs to run
         id: check_stage3
         run: |
-          STAGE_STATUS=$(jq -r '.stage3 // "pending"' state.json)
+          STAGE_STATUS=$(jq -r '.stage3 // "pending"' /tmp/pipeline-state/state.json)
           echo "Stage 3 status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "run_stage3=true" >> $GITHUB_ENV
@@ -116,5 +116,5 @@ jobs:
 
       - name: Update state file for Stage 3
         run: |
-          jq '.stage3 = "success"' state.json > tmp.json && mv tmp.json state.json
+          jq '.stage3 = "success"' /tmp/pipeline-state/state.json > tmp.json && mv tmp.json /tmp/pipeline-state/state.json
         shell: bash
