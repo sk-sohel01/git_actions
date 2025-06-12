@@ -36,7 +36,7 @@ jobs:
 
   stage1:
     needs: initialize
-    if: ${{ needs.initialize.outputs.last_failed_stage == 'null' || needs.initialize.outputs.last_failed_stage == 'stage1' }}
+    if: ${{ needs.initialize.outputs.last_failed_stage == 'none' || needs.initialize.outputs.last_failed_stage == 'stage1' }}
     runs-on: ubuntu-latest
     steps:
       - name: Execute Stage 1
