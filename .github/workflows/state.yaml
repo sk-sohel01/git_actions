@@ -59,11 +59,6 @@ jobs:
     needs: stage1
     runs-on: self-hosted
     steps:
-      - name: Download state.json
-        uses: actions/download-artifact@v4
-        with:
-          name: state-file
-
       - name: Check if Stage 2 needs to run
         id: check_stage2
         run: |
@@ -94,11 +89,6 @@ jobs:
     needs: stage2
     runs-on: self-hosted
     steps:
-      - name: Download state.json
-        uses: actions/download-artifact@v4
-        with:
-          name: state-file
-
       - name: Check if Stage 3 needs to run
         id: check_stage3
         run: |
