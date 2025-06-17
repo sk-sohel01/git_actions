@@ -31,17 +31,27 @@
       mv ./kubectl ~/.local/bin/kubectl
       mv minikube /usr/local/bin/
       minikube --version
-      sudo -u ubuntu minikube start --driver=docker
+      sudo -u ubuntu minikube start -p dev --driver=docker
       curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
       chmod 700 get_helm.sh
       ./get_helm.sh
+      kubectl config use-context dev
       sudo -u ubuntu flux bootstrap github \
       --token-auth \
       --owner=chandirasoodan \
       --repository=chandirasoodan/k8s_manifests \
       --branch=main \
-      --path=clusters/my-cluster \
+      --path=clusters/my-cluster/dev \
       --personal 
+      sudo -u ubuntu minikube start -p prod --driver=docker
+      kubectl config use-context dev
+      sudo -u ubuntu flux bootstrap github \
+      --token-auth \
+      --owner=chandirasoodan \
+      --repository=chandirasoodan/k8s_manifests \
+      --branch=main \
+      --path=clusters/my-cluster/prod \
+      --personal
       sudo apt install git -y
       git --version
       git clone https://github.com/RBC/finos-traderX.git
