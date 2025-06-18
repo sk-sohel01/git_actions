@@ -78,9 +78,8 @@ jobs:
           sudo mv kubectl /usr/local/bin/
           sudo apt-get update
           export TOKEN=${{ vars.TOKEN }}
-          echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
-          source /etc/environment
-
+          echo "TOKEN=${{ vars.TOKEN }}" > ~/.env
+          source ~/.env
       - name: Create EKS Cluster and Namespace
         run: |
           eksctl create cluster \
