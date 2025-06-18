@@ -79,7 +79,7 @@ jobs:
       - name: Create EKS Cluster and Namespace
         run: |
           eksctl create cluster \
-            --name $CLUSTER_NAME \
+            --name ${{ github.event.inputs.ClusterName }} \
             --version $K8S_VERSION \
             --region $AWS_REGION \
             --nodegroup-name standard-workers \
