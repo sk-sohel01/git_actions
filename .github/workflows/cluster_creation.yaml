@@ -47,6 +47,7 @@ env:
   CLUSTERNAME: ${{ github.event.inputs.ClusterName }}
   NAMESPACE: ${{ github.event.inputs.NameSpace }}
   USERNAME: ${{ github.event.inputs.UserID }}
+  MANIFEST_REPO: ${{ github.event.inputs.ManifestRepo }}
   AWS_REGION: us-east-1
   CLUSTER_NAME: github-eks-cluster
   NODE_TYPE: t3.medium
@@ -98,9 +99,9 @@ jobs:
           curl -s https://fluxcd.io/install.sh | sudo bash
           sudo -u ubuntu flux bootstrap github \
           --token-auth \
-          --owner=chandirasoodan \
-          --repository=chandirasoodan/cluster_manifests \
-          --branch=main \
-          --path=clusters/dev \
+          --owner=${{ github.event.inputs.OwnerName }} \
+          --repository=${{ github.event.inputs.OwnerName }}/${{ github.event.inputs.ManifestRepo }} \
+          --branch=${{ github.event.inputs.BranchName }} \
+          --path=Master/${{ github.event.inputs.Environment }} \
           --personal
           flux get all
