@@ -44,7 +44,6 @@ env:
   # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
   SECRET_KEY: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
-  TOKEN: ${{ vars.TOKEN }}
   CLUSTERNAME: ${{ github.event.inputs.ClusterName }}
   NAMESPACE: ${{ github.event.inputs.NameSpace }}
   USERNAME: ${{ github.event.inputs.UserID }}
@@ -62,8 +61,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: $ACCESS_KEY
-          aws-secret-access-key: $SECRET_KEY
+          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
           aws-region: us-east-1
 
       - name: Install eksctl
