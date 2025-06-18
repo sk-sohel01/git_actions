@@ -1,0 +1,94 @@
+name: Cluster-creation
+on:
+  workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+      ClusterName:
+        description: 'Cluster Name'
+        required: true
+        default: 'default-cluster'
+      NameSpace:
+        description: 'Namespace'
+        required: true
+        default: 'default-namespace'
+      BranchName:
+        description: 'Branch Name'
+        required: true
+        default: 'main'
+      StatefileName:
+        description: 'Statefile Name'
+        required: true
+        default: 'statefile.tf'
+      UserName:
+        description: 'User Name'
+        required: true
+        default: 'admin'
+      RepoName:
+        description: 'Repo Name'
+        required: true
+        default: 'git_actions'
+      OwnerName:
+        description: 'Owner Name'
+        required: true
+        default: 'chandirasoodan'
+
+
+
+
+
+
+env:
+  # Setting an environment variable with the value of a configuration variable
+  ACCESS_KEY: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
+  SECRET_KEY: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
+  TOKEN: ${{ vars.TOKEN }}
+  CLUSTERNAME: ${{ github.event.inputs.ClusterName }}
+  NAMESPACE: ${{ github.event.inputs.NameSpace }}
+  USERNAME: ${{ github.event.inputs.UserID }}
+  AWS_REGION: us-east-1
+  CLUSTER_NAME: github-eks-cluster
+  NODE_TYPE: t3.medium
+  NODE_COUNT: 1
+  K8S_VERSION: "1.28"
+
+jobs:
+  create-eks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: $ACCESS_KEY
+          aws-secret-access-key: $SECRET_KEY
+          aws-region: us-east-1
+
+      - name: Install eksctl
+        run: |
+          curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      - name: Create EKS Cluster and Namespace
+        run: |
+          eksctl create cluster \
+            --name $CLUSTER_NAME \
+            --version $K8S_VERSION \
+            --region $AWS_REGION \
+            --nodegroup-name standard-workers \
+            --node-type $NODE_TYPE \
+            --nodes $NODE_COUNT \
+            --nodes-min 1 \
+            --nodes-max 1 \
+            --managed
+
+          aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
+          kubectl create namespace ${{ github.event.inputs.NameSpace }}
