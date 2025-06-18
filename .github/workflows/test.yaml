@@ -139,4 +139,4 @@ jobs:
           echo $SECRET_KEY
           echo $TOKEN
           ansible --version
-          ansible-playbook ./ansible.yaml --extra-vars "TOKEN=$TOKEN" "CLUSTERNAME=$CLUSTERNAME" -vvv
+          ansible-playbook ./ansible.yaml --extra-vars "TOKEN=$TOKEN CLUSTERNAME=$CLUSTERNAME" -vvv
