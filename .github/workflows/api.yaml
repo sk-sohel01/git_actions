@@ -1,0 +1,27 @@
+name: API-Test
+on:
+  workflow_dispatch:
+      inputs:
+        ClusterName:
+          description: 'Cluster Name'
+          required: true
+          default: 'default-cluster'
+        NameSpace:
+          description: 'Namespace'
+          required: true
+          default: 'default-namespace'
+        UserID:
+          description: 'User ID'
+          required: true
+          default: 'admin'
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Input Parameters
+        run: |
+          echo "Cluster Name: ${{ github.event.inputs.ClusterName }}"
+          echo "Namespace: ${{ github.event.inputs.NameSpace }}"
+          echo "User ID: ${{ github.event.inputs.UserID }}"
+
