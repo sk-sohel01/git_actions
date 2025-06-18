@@ -3,19 +3,41 @@
 name: Demo-deployment
 on:
   workflow_dispatch:
-      inputs:
-        ClusterName:
-          description: 'Cluster Name'
-          required: true
-          default: 'default-cluster'
-        NameSpace:
-          description: 'Namespace'
-          required: true
-          default: 'default-namespace'
-        UserID:
-          description: 'User ID'
-          required: true
-          default: 'admin'
+    inputs:
+      Environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+      ClusterName:
+        description: 'Cluster Name'
+        required: true
+        default: 'default-cluster'
+      NameSpace:
+        description: 'Namespace'
+        required: true
+        default: 'default-namespace'
+      BranchName:
+        description: 'Branch Name'
+        required: true
+        default: 'main'
+      StatefileName:
+        description: 'Statefile Name'
+        required: true
+        default: 'statefile.tf'
+      UserName:
+        description: 'User Name'
+        required: true
+        default: 'admin'
+      RepoName:
+        description: 'Repo Name'
+        required: true
+        default: 'git_actions'
+      OwnerName:
+        description: 'Owner Name'
+        required: true
+        default: 'chandirasoodan'
+
+
 
 
 
