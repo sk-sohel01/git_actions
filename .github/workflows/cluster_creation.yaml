@@ -34,6 +34,10 @@ on:
         description: 'Owner Name'
         required: true
         default: 'chandirasoodan'
+      ManifestRepo:
+        description: 'Manifest Repo Name'
+        required: true
+        default: 'cluster_manifests'
 
 
 
