@@ -64,6 +64,7 @@ jobs:
           aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
           aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
           aws-region: us-east-1
+          TOKEN: ${{ vars.TOKEN }}
 
       - name: Install eksctl
         run: |
@@ -75,6 +76,8 @@ jobs:
           curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
+          echo 'GITHUB_TOKEN={{ TOKEN }}' | sudo tee -a /etc/environment
+          source /etc/environment
 
       - name: Create EKS Cluster and Namespace
         run: |
@@ -91,3 +94,12 @@ jobs:
 
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
           kubectl create namespace ${{ github.event.inputs.NameSpace }}
+          curl -s https://fluxcd.io/install.sh | sudo bash
+          sudo -u ubuntu flux bootstrap github \
+          --token-auth \
+          --owner=chandirasoodan \
+          --repository=chandirasoodan/k8s_manifests \
+          --branch=main \
+          --path=clusters/my-cluster/dev \
+          --personal
+          flux get all
