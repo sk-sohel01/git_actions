@@ -25,6 +25,10 @@
         echo RUNNER_TOKEN=$(curl -v -X POST -H "Authorization: Bearer "{{ TOKEN }}"" \
         -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/chandirasoodan/git_actions/actions/runners/registration-token" | jq -r '.token') | sudo tee -a /etc/environment
+        sudo apt update && sudo apt upgrade -y
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
         source /etc/environment
         sudo -u ubuntu bash <<EOF
         mkdir -p ~/actions-runner && cd ~/actions-runner

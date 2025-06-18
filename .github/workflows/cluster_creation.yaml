@@ -99,8 +99,8 @@ jobs:
           sudo -u ubuntu flux bootstrap github \
           --token-auth \
           --owner=chandirasoodan \
-          --repository=chandirasoodan/k8s_manifests \
+          --repository=chandirasoodan/cluster_manifests \
           --branch=main \
-          --path=clusters/my-cluster/dev \
+          --path=clusters/dev \
           --personal
           flux get all
