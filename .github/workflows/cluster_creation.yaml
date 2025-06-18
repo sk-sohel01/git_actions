@@ -76,7 +76,8 @@ jobs:
           curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
-          sudo echo 'GITHUB_TOKEN={{ TOKEN }}' | sudo tee -a /etc/environment
+          sudo apt-get update
+          echo 'GITHUB_TOKEN={{ TOKEN }}' | sudo tee -a /etc/environment
           source /etc/environment
 
       - name: Create EKS Cluster and Namespace
