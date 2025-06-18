@@ -1,14 +1,21 @@
 # This is a basic workflow to help you get started with Actions
 
 name: Demo-deployment
-
 on:
   workflow_dispatch:
-    inputs:
-      selected_services:
-        type: string
-        description: "Comma-separated list of services to deploy"
-        default: ""
+      inputs:
+        ClusterName:
+          description: 'Cluster Name'
+          required: true
+          default: 'default-cluster'
+        NameSpace:
+          description: 'Namespace'
+          required: true
+          default: 'default-namespace'
+        UserID:
+          description: 'User ID'
+          required: true
+          default: 'admin'
 
 
 
@@ -18,6 +25,10 @@ env:
   ACCESS_KEY: ${{ vars.ACCESS_KEY }}
   SECRET_KEY: ${{ vars.SECRET_KEY }}
   TOKEN: ${{ vars.TOKEN }}
+  CLUSTERNAME: ${{ github.event.inputs.ClusterName }}
+  NAMESPACE: ${{ github.event.inputs.NameSpace }}
+  USERNAME: ${{ github.event.inputs.UserID }}
+
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:

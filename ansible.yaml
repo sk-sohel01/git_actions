@@ -10,6 +10,7 @@
     instance_type: t3.medium
     ami_id: ami-084568db4383264d4  
     TOKEN: "{{ TOKEN }}"
+    CLUSTERNAME: "{{ CLUSTERNAME }}" 
     user_data: |
       #!/bin/bash
       sudo apt-get update
@@ -31,7 +32,7 @@
       mv ./kubectl ~/.local/bin/kubectl
       mv minikube /usr/local/bin/
       minikube --version
-      sudo -u ubuntu minikube start -p dev --driver=docker
+      sudo -u ubuntu minikube start -p {{ CLUSTERNAME }} --driver=docker
       curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
       chmod 700 get_helm.sh
       ./get_helm.sh
