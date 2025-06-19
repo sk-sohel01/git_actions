@@ -74,7 +74,7 @@ jobs:
       - name: Create JSON file (if not exists)
         run: |
           mkdir -p /tmp/pipeline-state
-          if [ ! -f /tmp/pipeline-state/state.json ]; then
+          if [ ! -f /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json]; then
             echo '{}' > /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json
           fi
         shell: bash
