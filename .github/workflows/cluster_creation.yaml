@@ -84,7 +84,7 @@ jobs:
           sudo apt-get update
           export TOKEN=${{ vars.TOKEN }}
           curl -s https://fluxcd.io/install.sh | sudo bash
-          echo 'GITHUB_TOKEN={{ TOKEN }}' | sudo tee -a /etc/environment
+          echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           source /etc/environment
       - name: Create EKS Cluster and Namespace
         run: |
