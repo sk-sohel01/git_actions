@@ -81,9 +81,9 @@ jobs:
           curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
+          curl -s https://fluxcd.io/install.sh | sudo bash
           sudo apt-get update
           export TOKEN=${{ vars.TOKEN }}
-          curl -s https://fluxcd.io/install.sh | sudo bash
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           source /etc/environment
       - name: Create EKS Cluster and Namespace
