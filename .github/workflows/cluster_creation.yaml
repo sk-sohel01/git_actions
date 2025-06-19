@@ -79,10 +79,10 @@ jobs:
           fi
         shell: bash
       
-      - name: Check if Stage 1 needs to run
+      - name: Check if create-eks needs to run
         id: check_create-eks
         run: |
-          STAGE_STATUS=$(jq -r '.create-eks // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json)
+          STAGE_STATUS=$(jq -r '."create-eks" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json)
           echo "create-eks status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "create-eks=true" >> $GITHUB_ENV
@@ -102,6 +102,7 @@ jobs:
           sudo apt-get update
           
       - name: Create EKS Cluster and Namespace
+        if: ${{ env.create-eks == 'true' }}
         run: |
           mkdir -p ~/.aws
           echo "[default]" > ~/.aws/credentials
@@ -140,7 +141,7 @@ jobs:
       - name: Check if flux-config needs to run
         id: check_flux-config
         run: |
-          STAGE_STATUS=$(jq -r '.flux-config // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json)
+          STAGE_STATUS=$(jq -r '."flux-config" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json)
           echo "flux-config status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "run-flux-config=true" >> $GITHUB_ENV
