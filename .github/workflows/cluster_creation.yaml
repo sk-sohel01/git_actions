@@ -78,6 +78,7 @@ jobs:
             echo '{}' > /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           fi
           ls -lrt
+        shell: bash
       
       - name: Check if create-eks needs to run
         id: check_create-eks
