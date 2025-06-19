@@ -71,34 +71,10 @@ jobs:
           aws-region: us-east-1
           TOKEN: ${{ vars.TOKEN }}
 
-      - name: Install eksctl
-        run: |
-          curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-          sudo mv /tmp/eksctl /usr/local/bin
-
-      - name: Install kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-          sudo apt-get update
-          
       - name: Create EKS Cluster and Namespace
         run: |
-          eksctl create cluster \
-            --name ${{ github.event.inputs.ClusterName }} \
-            --version $K8S_VERSION \
-            --region $AWS_REGION \
-            --nodegroup-name standard-workers \
-            --node-type $NODE_TYPE \
-            --nodes $NODE_COUNT \
-            --nodes-min 1 \
-            --nodes-max 1 \
-            --managed
-
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
           kubectl create namespace ${{ github.event.inputs.NameSpace }}
-          curl -s https://fluxcd.io/install.sh | sudo bash
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           source /etc/environment
