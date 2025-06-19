@@ -72,6 +72,10 @@ jobs:
           TOKEN: ${{ vars.TOKEN }}
 
       - name: Create EKS Cluster and Namespace
+        env:
+          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
+          aws-region: us-east-1
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
           export TOKEN=${{ vars.TOKEN }}
