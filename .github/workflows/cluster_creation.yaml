@@ -83,8 +83,9 @@ jobs:
           sudo mv kubectl /usr/local/bin/
           sudo apt-get update
           export TOKEN=${{ vars.TOKEN }}
-          echo "TOKEN=${{ vars.TOKEN }}" > ~/.env
-          source ~/.env
+          curl -s https://fluxcd.io/install.sh | sudo bash
+          echo 'GITHUB_TOKEN={{ TOKEN }}' | sudo tee -a /etc/environment
+          source /etc/environment
       - name: Create EKS Cluster and Namespace
         run: |
           eksctl create cluster \
@@ -100,7 +101,6 @@ jobs:
 
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
           kubectl create namespace ${{ github.event.inputs.NameSpace }}
-          curl -s https://fluxcd.io/install.sh | sudo bash
           sudo -u ubuntu flux bootstrap github \
           --token-auth \
           --owner=${{ github.event.inputs.OwnerName }} \
