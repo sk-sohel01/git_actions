@@ -74,7 +74,6 @@ jobs:
       - name: Create EKS Cluster and Namespace
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
-          kubectl create namespace ${{ github.event.inputs.NameSpace }}
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           source /etc/environment
