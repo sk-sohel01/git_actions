@@ -70,12 +70,38 @@ jobs:
           aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
           aws-region: us-east-1
           TOKEN: ${{ vars.TOKEN }}
+      
+      - name: Create JSON file (if not exists)
+        run: |
+          mkdir -p /tmp/pipeline-state
+          if [ ! -f /tmp/pipeline-state/state.json ]; then
+            echo '{}' > /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json
+          fi
+        shell: bash
+      
+      - name: Check if Stage 1 needs to run
+        id: check_create-eks
+        run: |
+          STAGE_STATUS=$(jq -r '.create-eks // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json)
+          echo "create-eks status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "create-eks=true" >> $GITHUB_ENV
+          fi
+        shell: bash
 
+      - name: Install eksctl
+        run: |
+          curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+          sudo apt-get update
+          
       - name: Create EKS Cluster and Namespace
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
-          AWS_REGION: us-east-1
         run: |
           mkdir -p ~/.aws
           echo "[default]" > ~/.aws/credentials
@@ -84,10 +110,46 @@ jobs:
           echo "[default]" > ~/.aws/config
           echo "region = us-east-1" >> ~/.aws/config
           echo "output = json" >> ~/.aws/config
-          export AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
-          export AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
-          export AWS_REGION=us-east-1
-          aws sts get-caller-identity
+          eksctl create cluster \
+            --name ${{ github.event.inputs.ClusterName }} \
+            --version $K8S_VERSION \
+            --region $AWS_REGION \
+            --nodegroup-name standard-workers \
+            --node-type $NODE_TYPE \
+            --nodes $NODE_COUNT \
+            --nodes-min 1 \
+            --nodes-max 1 \
+            --managed
+
+      - name: Update state file for Stage 1
+        if: ${{ failure() }}
+        run: |
+          jq '.create-eks = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json
+        shell: bash
+
+      - name: Update state file for Stage 1 (Success)
+        if: ${{ success() }}
+        run: |
+          jq '.create-eks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json
+        shell: bash
+
+  flux-config:
+    needs: create-eks
+    runs-on: self-hosted
+    steps:
+      - name: Check if flux-config needs to run
+        id: check_flux-config
+        run: |
+          STAGE_STATUS=$(jq -r '.flux-config // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json)
+          echo "flux-config status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "run-flux-config=true" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: flux bootstarp
+        id: flux bootstarp
+        run: |
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
@@ -99,3 +161,15 @@ jobs:
           --path=Master/${{ github.event.inputs.Environment }} \
           --personal
           flux get all
+
+      - name: Update state file for flux-config
+        if: ${{ failure() }}
+        run: |
+          jq '.flux-config = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json
+        shell: bash
+
+      - name: Update state file for flux-config (Success)
+        if: ${{ success() }}
+        run: |
+          jq '.flux-config = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserID }}-pipeline-state.json > tmp.json
+        shell: bash
