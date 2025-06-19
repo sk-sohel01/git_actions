@@ -126,13 +126,13 @@ jobs:
       - name: Update state file for Stage 1
         if: ${{ failure() }}
         run: |
-          jq '.create-eks = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '."create-eks" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
       - name: Update state file for Stage 1 (Success)
         if: ${{ success() }}
         run: |
-          jq '.create-eks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '."create-eks" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
   flux-config:
@@ -167,11 +167,11 @@ jobs:
       - name: Update state file for flux-config
         if: ${{ failure() }}
         run: |
-          jq '.flux-config = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
+          jq '."flux-config" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
         shell: bash
 
       - name: Update state file for flux-config (Success)
         if: ${{ success() }}
         run: |
-          jq '.flux-config = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
+          jq '."flux-config" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
         shell: bash
