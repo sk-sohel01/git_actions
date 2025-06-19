@@ -147,8 +147,8 @@ jobs:
           fi
         shell: bash
 
-      - name: flux bootstarp
-        id: flux bootstarp
+      - name: flux-bootstarp
+        id: flux-bootstarp
         run: |
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
