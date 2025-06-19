@@ -105,23 +105,7 @@ jobs:
       - name: Create EKS Cluster and Namespace
         if: ${{ env.create-eks == 'true' }}
         run: |
-          mkdir -p ~/.aws
-          echo "[default]" > ~/.aws/credentials
-          echo "AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
-          echo "[default]" > ~/.aws/config
-          echo "region = us-east-1" >> ~/.aws/config
-          echo "output = json" >> ~/.aws/config
-          eksctl create cluster \
-            --name ${{ github.event.inputs.ClusterName }} \
-            --version $K8S_VERSION \
-            --region $AWS_REGION \
-            --nodegroup-name standard-workers \
-            --node-type $NODE_TYPE \
-            --nodes $NODE_COUNT \
-            --nodes-min 1 \
-            --nodes-max 1 \
-            --managed
+          ls -lrt
 
       - name: Update state file for Stage 1
         if: ${{ failure() }}
