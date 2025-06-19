@@ -80,6 +80,7 @@ jobs:
           export AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
           export AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
           export AWS_REGION=us-east-1
+          aws sts get-caller-identity
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
