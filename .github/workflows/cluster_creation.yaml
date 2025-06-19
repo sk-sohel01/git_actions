@@ -89,23 +89,27 @@ jobs:
             echo "create-eks=true" >> $GITHUB_ENV
           fi
         shell: bash
-
-      - name: Install eksctl
-        run: |
-          curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-          sudo mv /tmp/eksctl /usr/local/bin
-
-      - name: Install kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
-          sudo apt-get update
           
       - name: Create EKS Cluster and Namespace
         if: ${{ env.create-eks == 'true' }}
         run: |
-          ls -lrt
+          mkdir -p ~/.aws
+          echo "[default]" > ~/.aws/credentials
+          echo "AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
+          echo "[default]" > ~/.aws/config
+          echo "region = us-east-1" >> ~/.aws/config
+          echo "output = json" >> ~/.aws/config
+          eksctl create cluster \
+            --name ${{ github.event.inputs.ClusterName }} \
+            --version $K8S_VERSION \
+            --region $AWS_REGION \
+            --nodegroup-name standard-workers \
+            --node-type $NODE_TYPE \
+            --nodes $NODE_COUNT \
+            --nodes-min 1 \
+            --nodes-max 1 \
+            --managed
 
       - name: Update state file for Stage 1
         if: ${{ failure() }}

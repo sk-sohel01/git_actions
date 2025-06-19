@@ -13,6 +13,7 @@
     user_data: |
         #!/bin/bash
         set -e  # Exit immediately if a command fails
+        sudo apt-get update
         sudo apt-get install zip unzip -y
         sudo apt remove containerd -y
         sudo apt --fix-broken install
@@ -22,6 +23,9 @@
         sudo apt  install docker.io -y
         sudo systemctl start docker
         sudo systemctl enable docker
+        curl -s https://fluxcd.io/install.sh | sudo bash
+        echo 'GITHUB_TOKEN={{ TOKEN }}' | sudo tee -a /etc/environment
+        source /etc/environment
         echo RUNNER_TOKEN=$(curl -v -X POST -H "Authorization: Bearer "{{ TOKEN }}"" \
         -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/repos/chandirasoodan/git_actions/actions/runners/registration-token" | jq -r '.token') | sudo tee -a /etc/environment
@@ -39,6 +43,12 @@
         chmod +x ./run.sh
         ./run.sh &
         EOF
+        curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+        sudo mv /tmp/eksctl /usr/local/bin
+        curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x kubectl
+        sudo mv kubectl /usr/local/bin/
+        sudo apt-get update
   tasks:       
     - name: Ensure correct Python interpreter
       ansible.builtin.command: /opt/pipx/venvs/ansible-core/bin/python -m pip install botocore boto3
