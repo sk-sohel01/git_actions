@@ -1,0 +1,165 @@
+name: flux-bootstarp
+on:
+  workflow_dispatch:
+    inputs:
+      Environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
+      ClusterName:
+        description: 'Cluster Name'
+        required: true
+        default: 'default-cluster'
+      NameSpace:
+        description: 'Namespace'
+        required: true
+        default: 'default-namespace'
+      BranchName:
+        description: 'Branch Name'
+        required: true
+        default: 'main'
+      StatefileName:
+        description: 'Statefile Name'
+        required: true
+        default: 'statefile.tf'
+      UserName:
+        description: 'User Name'
+        required: true
+        default: 'admin'
+      RepoName:
+        description: 'Repo Name'
+        required: true
+        default: 'git_actions'
+      OwnerName:
+        description: 'Owner Name'
+        required: true
+        default: 'chandirasoodan'
+      ManifestRepo:
+        description: 'Manifest Repo Name'
+        required: true
+        default: 'cluster_manifests'
+
+
+
+
+
+
+env:
+  # Setting an environment variable with the value of a configuration variable
+  ACCESS_KEY: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
+  SECRET_KEY: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
+  CLUSTERNAME: ${{ github.event.inputs.ClusterName }}
+  NAMESPACE: ${{ github.event.inputs.NameSpace }}
+  USERNAME: ${{ github.event.inputs.UserName }}
+  MANIFEST_REPO: ${{ github.event.inputs.ManifestRepo }}
+  AWS_REGION: us-east-1
+  CLUSTER_NAME: github-eks-cluster
+  NODE_TYPE: t3.medium
+  NODE_COUNT: 1
+  K8S_VERSION: "1.28"
+
+jobs:
+  create-eks:
+    runs-on: self-hosted
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
+          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
+          aws-region: us-east-1
+          TOKEN: ${{ vars.TOKEN }}
+      
+      - name: Create JSON file (if not exists)
+        run: |
+          mkdir -p /tmp/pipeline-state
+          if [ ! -f /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
+            echo '{}' > /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          fi
+        shell: bash
+      
+      - name: Check if create-eks needs to run
+        id: check_create-eks
+        run: |
+          STAGE_STATUS=$(jq -r '."create-eks" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
+          echo "create-eks status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "create-eks=true" >> $GITHUB_ENV
+          fi
+        shell: bash
+          
+      - name: Create EKS Cluster and Namespace
+        if: ${{ env.create-eks == 'true' }}
+        run: |
+          mkdir -p ~/.aws
+          echo "[default]" > ~/.aws/credentials
+          echo "AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
+          echo "[default]" > ~/.aws/config
+          echo "region = us-east-1" >> ~/.aws/config
+          echo "output = json" >> ~/.aws/config
+          eksctl create cluster \
+            --name ${{ github.event.inputs.ClusterName }} \
+            --version $K8S_VERSION \
+            --region $AWS_REGION \
+            --nodegroup-name standard-workers \
+            --node-type $NODE_TYPE \
+            --nodes $NODE_COUNT \
+            --nodes-min 1 \
+            --nodes-max 1 \
+            --managed
+
+      - name: Update state file for Stage 1
+        if: ${{ failure() }}
+        run: |
+          jq '."create-eks" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+        shell: bash
+
+      - name: Update state file for Stage 1 (Success)
+        if: ${{ success() }}
+        run: |
+          jq '."create-eks" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+        shell: bash
+
+  flux-config:
+    needs: create-eks
+    runs-on: self-hosted
+    steps:
+      - name: Check if flux-config needs to run
+        id: check_flux-config
+        run: |
+          STAGE_STATUS=$(jq -r '."flux-config" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json)
+          echo "flux-config status: $STAGE_STATUS"
+          if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
+            echo "flux-config=true" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: flux-bootstarp
+        id: flux-bootstarp
+        if: ${{ env.flux-config == 'true' }}
+        run: |
+          export TOKEN=${{ vars.TOKEN }}
+          echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
+          aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
+          sudo -u ubuntu flux bootstrap github \
+          --token-auth \
+          --owner=${{ github.event.inputs.OwnerName }} \
+          --repository=${{ github.event.inputs.OwnerName }}/${{ github.event.inputs.ManifestRepo }} \
+          --branch=${{ github.event.inputs.BranchName }} \
+          --path=cluster/staging \
+          --personal
+          flux get all
+
+      - name: Update state file for flux-config as failure
+        if: ${{ failure() }}
+        run: |
+          jq '."flux-config" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
+        shell: bash
+
+      - name: Update state file for flux-config as Success
+        if: ${{ success() }}
+        run: |
+          jq '."flux-config" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
+        shell: bash
