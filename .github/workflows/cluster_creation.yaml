@@ -138,7 +138,6 @@ jobs:
 
       - name: flux-bootstarp
         id: flux-bootstarp
-        if: ${{ env.flux-config == 'true' }}
         run: |
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
