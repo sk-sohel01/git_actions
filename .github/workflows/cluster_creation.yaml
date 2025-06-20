@@ -147,7 +147,7 @@ jobs:
           --owner=${{ github.event.inputs.OwnerName }} \
           --repository=${{ github.event.inputs.OwnerName }}/${{ github.event.inputs.ManifestRepo }} \
           --branch=${{ github.event.inputs.BranchName }} \
-          --path=cluster/staging \
+          --path=clusters/staging \
           --personal
           flux get all
 
