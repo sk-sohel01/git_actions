@@ -129,7 +129,7 @@ jobs:
       - name: Check if flux-config needs to run
         id: check_flux-config
         run: |
-          STAGE_STATUS=$(jq -r '."flux-config" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json)
+          STAGE_STATUS=$(jq -r '."flux-config" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "flux-config status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "flux-config=true" >> $GITHUB_ENV
