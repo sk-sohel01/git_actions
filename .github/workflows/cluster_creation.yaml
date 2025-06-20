@@ -82,7 +82,7 @@ jobs:
       - name: Check if create-eks needs to run
         id: check_create-eks
         run: |
-          STAGE_STATUS=$(jq -r '."create-eks" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
+          STAGE_STATUS=$(jq -r '.createeks // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "create-eks status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "create-eks=true" >> $GITHUB_ENV
@@ -99,27 +99,17 @@ jobs:
           echo "[default]" > ~/.aws/config
           echo "region = us-east-1" >> ~/.aws/config
           echo "output = json" >> ~/.aws/config
-          eksctl create cluster \
-            --name ${{ github.event.inputs.ClusterName }} \
-            --version $K8S_VERSION \
-            --region $AWS_REGION \
-            --nodegroup-name standard-workers \
-            --node-type $NODE_TYPE \
-            --nodes $NODE_COUNT \
-            --nodes-min 1 \
-            --nodes-max 1 \
-            --managed
 
       - name: Update state file for Stage 1
         if: ${{ failure() }}
         run: |
-          jq '."create-eks" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.createeks = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
-      - name: Update state file for Stage 1 (Success)
+      - name: Update state file for ekscreation (Success)
         if: ${{ success() }}
         run: |
-          jq '."create-eks" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.createeks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
   flux-config:
@@ -129,7 +119,7 @@ jobs:
       - name: Check if flux-config needs to run
         id: check_flux-config
         run: |
-          STAGE_STATUS=$(jq -r '."flux-config" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
+          STAGE_STATUS=$(jq -r '.fluxconfig // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "flux-config status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "flux-config=true" >> $GITHUB_ENV
@@ -154,11 +144,11 @@ jobs:
       - name: Update state file for flux-config as failure
         if: ${{ failure() }}
         run: |
-          jq '."flux-config" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.fluxconfig = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
       - name: Update state file for flux-config as Success
         if: ${{ success() }}
         run: |
-          jq '."flux-config" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json  && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.fluxconfig = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json  && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
