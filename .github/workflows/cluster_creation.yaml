@@ -88,6 +88,19 @@ jobs:
             echo "create-eks=true" >> $GITHUB_ENV
           fi
         shell: bash
+
+      - name: Update pipeline-state with metadata
+        run: |
+          FILE="/tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json"
+          [ -f "$FILE" ] || echo '{}' > "$FILE"
+          jq \
+            --arg cluster "${{ github.event.inputs.ClusterName }}" \
+            --arg ns "${{ github.event.inputs.NameSpace }}" \
+            --arg user "${{ github.event.inputs.UserName }}" \
+            --arg repo "${{ github.event.inputs.ManifestRepo }}" \
+            '.CLUSTERNAME = $cluster | .NAMESPACE = $ns | .USERNAME = $user | .MANIFEST_REPO = $repo' \
+            "$FILE" > tmp.json && mv tmp.json "$FILE"
+        shell: bash
           
       - name: Create EKS Cluster and Namespace
         if: ${{ env.create-eks == 'true' }}
