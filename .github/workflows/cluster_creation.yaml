@@ -77,7 +77,6 @@ jobs:
           if [ ! -f /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
             echo '{}' > /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           fi
-          ls -lrt
         shell: bash
       
       - name: Check if create-eks needs to run
@@ -133,12 +132,13 @@ jobs:
           STAGE_STATUS=$(jq -r '."flux-config" // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json)
           echo "flux-config status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
-            echo "run-flux-config=true" >> $GITHUB_ENV
+            echo "flux-config=true" >> $GITHUB_ENV
           fi
         shell: bash
 
       - name: flux-bootstarp
         id: flux-bootstarp
+        if: ${{ env.flux-config == 'true' }}
         run: |
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
@@ -148,17 +148,17 @@ jobs:
           --owner=${{ github.event.inputs.OwnerName }} \
           --repository=${{ github.event.inputs.OwnerName }}/${{ github.event.inputs.ManifestRepo }} \
           --branch=${{ github.event.inputs.BranchName }} \
-          --path=Master/${{ github.event.inputs.Environment }} \
+          --path=cluster/staging \
           --personal
           flux get all
 
-      - name: Update state file for flux-config
+      - name: Update state file for flux-config as failure
         if: ${{ failure() }}
         run: |
           jq '."flux-config" = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
         shell: bash
 
-      - name: Update state file for flux-config (Success)
+      - name: Update state file for flux-config as Success
         if: ${{ success() }}
         run: |
           jq '."flux-config" = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json
