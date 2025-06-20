@@ -109,7 +109,7 @@ jobs:
       - name: Update state file for ekscreation (Success)
         if: ${{ success() }}
         run: |
-          jq '.createeks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json jq '.createeks = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.createeks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json 
         shell: bash
 
   flux-config:
