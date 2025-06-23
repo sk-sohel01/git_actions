@@ -113,6 +113,7 @@ jobs:
         run: |
           jq '.createeks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json 
         shell: bash
+      
 
   flux-config:
     needs: create-eks
@@ -157,3 +158,11 @@ jobs:
         run: |
           jq '.fluxconfig = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
+
+      - name: upload json to Repo
+        run: |
+          git add /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          git commit -m "added json"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ vars.TOKEN }}
