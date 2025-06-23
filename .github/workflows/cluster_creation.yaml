@@ -204,6 +204,8 @@ jobs:
           kubectl get svc
           sudo apt-get update && sudo apt-get install lsof
           lsof -i :8080 || echo "No process using port 8080"
+          sudo chown $(id -u):$(id -g) /tmp/kubeconfig
+          chmod 600 /tmp/kubeconfig
           sudo -u ubuntu flux bootstrap github \
           --token-auth \
           --kubeconfig=/tmp/kubeconfig \
