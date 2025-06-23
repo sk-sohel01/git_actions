@@ -59,7 +59,7 @@ env:
 
 jobs:
   create-eks:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: 
       image: ghcr.io/sk-sohel01/gha-agent:latest
 
@@ -159,7 +159,7 @@ jobs:
 
   flux-config:
     needs: create-eks
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: 
       image: ghcr.io/sk-sohel01/gha-agent:latest
     steps:
