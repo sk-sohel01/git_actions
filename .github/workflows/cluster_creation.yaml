@@ -207,7 +207,7 @@ jobs:
           lsof -i :8080 || echo "No process using port 8080"
           sudo chown $(id -u):$(id -g) /tmp/kubeconfig
           chmod 777 /tmp/kubeconfig
-          flux uninstall --namespace=flux-system --keep-namespace=true
+          flux uninstall --namespace=flux-system --keep-namespace=true -y
           flux bootstrap github \
           --token-auth \
           --kubeconfig=/tmp/kubeconfig \
