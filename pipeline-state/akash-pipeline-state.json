@@ -1,0 +1,7 @@
+{
+  "CLUSTERNAME": "default-cluster",
+  "NAMESPACE": "default-namespace",
+  "USERNAME": "akash",
+  "MANIFEST_REPO": "cluster_manifests",
+  "createeks": "success"
+}
