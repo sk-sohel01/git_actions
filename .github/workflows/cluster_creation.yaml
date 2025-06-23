@@ -130,6 +130,7 @@ jobs:
         shell: bash
       
       - name: upload json to Repo
+        continue-on-error: true
         run: |
           cd git_actions
           git add .
@@ -203,4 +204,3 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
-          
