@@ -121,7 +121,7 @@ jobs:
       
       - name: Upload state JSON
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pipeline-state
           path: ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
