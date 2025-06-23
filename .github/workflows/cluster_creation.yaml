@@ -64,13 +64,16 @@ jobs:
       image: ghcr.io/sk-sohel01/gha-agent:latest
 
     steps:      
-      - uses: actions/checkout@v4
-      - name: Load Services from JSON
-        id: services_list
-        run: ls -lrt
-
+      - name: upload json to Repo
+        run: |
+          git config user.name "chandirasoodan"
+          git config user.email "akash42jb@gmail.com"
+          git clone https://github.com/chandirasoodan/git_actions.git
+        env:
+          GITHUB_TOKEN: ${{ vars.TOKEN }}
       - name: Create JSON file (if not exists)
         run: |
+          cd git_actions
           mkdir -p ./pipeline-state
           if [ ! -f ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
             echo '{}' > ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
@@ -130,7 +133,7 @@ jobs:
         run: |
           git config user.name "chandirasoodan"
           git config user.email "akash42jb@gmail.com"
-          git add ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          git add .
           git commit -m "added json"
           git push
         env:
@@ -143,11 +146,14 @@ jobs:
     container: 
       image: ghcr.io/sk-sohel01/gha-agent:latest
     steps:
-      - name: Download state JSON
-        uses: actions/download-artifact@v4
-        with:
-          name: pipeline-state
-          path: ./pipeline-state
+      - name: upload json to Repo
+        run: |
+          git config user.name "chandirasoodan"
+          git config user.email "akash42jb@gmail.com"
+          git clone https://github.com/chandirasoodan/git_actions.git
+          cd git_actions
+        env:
+          GITHUB_TOKEN: ${{ vars.TOKEN }}
 
       - name: Check if flux-config needs to run
         id: check_flux-config
