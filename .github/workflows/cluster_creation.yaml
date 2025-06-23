@@ -134,8 +134,7 @@ jobs:
           cd git_actions
           git add .
           git commit -m "added json"
-          git config user.name "chandirasoodan"
-          git config user.email "akash42jb@gmail.com"
+          git remote set-url origin https://x-access-token:${{ vars.TOKEN }}@github.com/git_actions.git"
           git push
         env:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
