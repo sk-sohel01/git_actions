@@ -64,18 +64,23 @@ jobs:
       image: ghcr.io/sk-sohel01/gha-agent:latest
 
     steps:      
+      - uses: actions/checkout@v4
+      - name: Load Services from JSON
+        id: services_list
+        run: ls -lrt
+
       - name: Create JSON file (if not exists)
         run: |
-          mkdir -p /tmp/pipeline-state
-          if [ ! -f /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
-            echo '{}' > /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          mkdir -p ./pipeline-state
+          if [ ! -f ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
+            echo '{}' > ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           fi
         shell: bash
       
       - name: Check if create-eks needs to run
         id: check_create-eks
         run: |
-          STAGE_STATUS=$(jq -r '.createeks // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
+          STAGE_STATUS=$(jq -r '.createeks // "pending"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "create-eks status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "create-eks=true" >> $GITHUB_ENV
@@ -84,7 +89,7 @@ jobs:
 
       - name: Update pipeline-state with metadata
         run: |
-          FILE="/tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json"
+          FILE="./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json"
           [ -f "$FILE" ] || echo '{}' > "$FILE"
           jq \
             '.CLUSTERNAME = "${{ github.event.inputs.ClusterName }}" | .NAMESPACE = "${{ github.event.inputs.NameSpace }}" | .USERNAME = "${{ github.event.inputs.UserName }}" | .MANIFEST_REPO ="${{ github.event.inputs.ManifestRepo }}"' \
@@ -105,18 +110,18 @@ jobs:
       - name: Update state file for Stage 1
         if: ${{ failure() }}
         run: |
-          jq '.createeks = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.createeks = "failed"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
       - name: Update state file for ekscreation (Success)
         if: ${{ success() }}
         run: |
-          jq '.createeks = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json 
+          jq '.createeks = "success"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json 
         shell: bash
       
       - name: upload json to Repo
         run: |
-          git add /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          git add ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           git commit -m "added json"
           git push
         env:
@@ -132,7 +137,7 @@ jobs:
       - name: Check if flux-config needs to run
         id: check_flux-config
         run: |
-          STAGE_STATUS=$(jq -r '.fluxconfig // "pending"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
+          STAGE_STATUS=$(jq -r '.fluxconfig // "pending"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "flux-config status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
             echo "flux-config=true" >> $GITHUB_ENV
@@ -157,19 +162,19 @@ jobs:
       - name: Update state file for flux-config as failure
         if: ${{ failure() }}
         run: |
-          jq '.fluxconfig = "failed"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.fluxconfig = "failed"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           
         shell: bash
 
       - name: Update state file for flux-config as Success
         if: ${{ success() }}
         run: |
-          jq '.fluxconfig = "success"' /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          jq '.fluxconfig = "success"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
       - name: upload json to Repo
         run: |
-          git add /tmp/pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          git add ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           git commit -m "added json"
           git push
         env:
