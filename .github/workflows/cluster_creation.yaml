@@ -75,6 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
       - name: Create JSON file (if not exists)
         run: |
+          cd git_actions
           mkdir -p ./pipeline-state
           if [ ! -f ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
             echo '{}' > ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
@@ -84,6 +85,7 @@ jobs:
       - name: Check if create-eks needs to run
         id: check_create-eks
         run: |
+          cd git_actions
           STAGE_STATUS=$(jq -r '.createeks // "pending"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "create-eks status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
@@ -93,6 +95,7 @@ jobs:
 
       - name: Update pipeline-state with metadata
         run: |
+          cd git_actions
           FILE="./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json"
           [ -f "$FILE" ] || echo '{}' > "$FILE"
           jq \
@@ -104,6 +107,7 @@ jobs:
         if: ${{ env.create-eks == 'true' }}
         run: |
           mkdir -p ~/.aws
+          cd git_actions
           echo "[default]" > ~/.aws/credentials
           echo "AWS_ACCESS_KEY_ID=${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}" >> ~/.aws/credentials
@@ -114,21 +118,16 @@ jobs:
       - name: Update state file for Stage 1
         if: ${{ failure() }}
         run: |
+          cd git_actions
           jq '.createeks = "failed"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
 
       - name: Update state file for ekscreation (Success)
         if: ${{ success() }}
         run: |
+          cd git_actions
           jq '.createeks = "success"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json 
         shell: bash
-      
-      - name: Upload state JSON
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pipeline-state
-          path: ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
       
       - name: upload json to Repo
         run: |
