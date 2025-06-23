@@ -133,6 +133,12 @@ jobs:
     container: 
       image: ghcr.io/sk-sohel01/gha-agent:latest
     steps:
+      - name: Download state JSON
+        uses: actions/download-artifact@v4
+        with:
+          name: pipeline-state
+          path: ./pipeline-state
+
       - name: Check if flux-config needs to run
         id: check_flux-config
         run: |
