@@ -196,6 +196,7 @@ jobs:
         shell: bash
 
       - name: upload json to Repo
+        if: ${{ always() }}
         run: |
           cd git_actions
           git add .
