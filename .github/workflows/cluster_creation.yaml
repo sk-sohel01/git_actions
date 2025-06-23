@@ -45,7 +45,6 @@ on:
 
 
 env:
-  # Setting an environment variable with the value of a configuration variable
   ACCESS_KEY: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
   SECRET_KEY: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
   CLUSTERNAME: ${{ github.event.inputs.ClusterName }}
@@ -60,7 +59,9 @@ env:
 
 jobs:
   create-eks:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    container: 
+      image: ghcr.io/sk-sohel01/gha-agent:latest
 
     steps:
       - name: Configure AWS Credentials
@@ -123,7 +124,9 @@ jobs:
 
   flux-config:
     needs: create-eks
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    container: 
+      image: ghcr.io/sk-sohel01/gha-agent:latest
     steps:
       - name: Check if flux-config needs to run
         id: check_flux-config
