@@ -119,13 +119,12 @@ jobs:
           jq '.createeks = "success"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json 
         shell: bash
       
-      - name: upload json to Repo
-        run: |
-          git add ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
-          git commit -m "added json"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ vars.TOKEN }}
+      - name: Upload state JSON
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pipeline-state
+          path: ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
       
 
   flux-config:
