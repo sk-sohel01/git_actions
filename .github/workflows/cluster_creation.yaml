@@ -66,14 +66,15 @@ jobs:
     steps:      
       - name: upload json to Repo
         run: |
+          git clone https://github.com/chandirasoodan/git_actions.git
+          cd git_actions
           git config user.name "chandirasoodan"
           git config user.email "akash42jb@gmail.com"
-          git clone https://github.com/chandirasoodan/git_actions.git
+          
         env:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
       - name: Create JSON file (if not exists)
         run: |
-          cd git_actions
           mkdir -p ./pipeline-state
           if [ ! -f ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json ]; then
             echo '{}' > ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
