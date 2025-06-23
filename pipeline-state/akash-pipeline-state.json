@@ -3,5 +3,6 @@
   "NAMESPACE": "default-namespace",
   "USERNAME": "akash",
   "MANIFEST_REPO": "cluster_manifests",
-  "createeks": "success"
+  "createeks": "success",
+  "fluxconfig": "failed"
 }
