@@ -117,6 +117,9 @@ jobs:
       - name: Create EKS Cluster and Namespace
         if: ${{ env.create-eks == 'true' }}
         run: |
+          curl --silent --location "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+          eksctl version
           eksctl create cluster \
           --name ${{ github.event.inputs.ClusterName }} \
           --version $K8S_VERSION \
@@ -128,7 +131,7 @@ jobs:
           --nodes-max 1 \
           --managed
 
-      - name: Update state file for Stage 1
+      - name: Update state file for create-cluster as failed
         if: ${{ failure() }}
         run: |
           cd git_actions
