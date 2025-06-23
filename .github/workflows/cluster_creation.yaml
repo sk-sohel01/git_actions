@@ -148,16 +148,15 @@ jobs:
     steps:
       - name: upload json to Repo
         run: |
-          git config user.name "chandirasoodan"
-          git config user.email "akash42jb@gmail.com"
           git clone https://github.com/chandirasoodan/git_actions.git
           cd git_actions
-        env:
-          GITHUB_TOKEN: ${{ vars.TOKEN }}
+          git config user.name "chandirasoodan"
+          git config user.email "akash42jb@gmail.com"
 
       - name: Check if flux-config needs to run
         id: check_flux-config
         run: |
+          cd git_actions
           STAGE_STATUS=$(jq -r '.fluxconfig // "pending"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json)
           echo "flux-config status: $STAGE_STATUS"
           if [[ "$STAGE_STATUS" == "failed" || "$STAGE_STATUS" == "pending" ]]; then
@@ -183,6 +182,7 @@ jobs:
       - name: Update state file for flux-config as failure
         if: ${{ failure() }}
         run: |
+          cd git_actions
           jq '.fluxconfig = "failed"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
           
         shell: bash
@@ -190,15 +190,16 @@ jobs:
       - name: Update state file for flux-config as Success
         if: ${{ success() }}
         run: |
+          cd git_actions
           jq '.fluxconfig = "success"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
-
+        
       - name: upload json to Repo
         run: |
-          git config user.name "chandirasoodan"
-          git config user.email "akash42jb@gmail.com"
-          git add ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          cd git_actions
+          git add .
           git commit -m "added json"
+          git remote set-url origin https://x-access-token:${{ vars.TOKEN }}@github.com/chandirasoodan/git_actions.git
           git push
         env:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
