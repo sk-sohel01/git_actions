@@ -4,5 +4,5 @@
   "USERNAME": "akash",
   "MANIFEST_REPO": "cluster_manifests",
   "createeks": "success",
-  "fluxconfig": "failed"
+  "fluxconfig": "success"
 }
