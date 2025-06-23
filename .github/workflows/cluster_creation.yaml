@@ -193,7 +193,7 @@ jobs:
           cd git_actions
           jq '.fluxconfig = "success"' ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json > tmp.json && mv tmp.json ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
         shell: bash
-        
+
       - name: upload json to Repo
         run: |
           cd git_actions
@@ -203,3 +203,4 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
+          
