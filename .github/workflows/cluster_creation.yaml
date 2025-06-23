@@ -132,6 +132,8 @@ jobs:
       - name: upload json to Repo
         run: |
           cd git_actions
+          git config user.name "chandirasoodan"
+          git config user.email "akash42jb@gmail.com"
           git add .
           git commit -m "added json"
           git push
