@@ -195,6 +195,7 @@ jobs:
         id: flux-bootstarp
         run: |
           export TOKEN=${{ vars.TOKEN }}
+          export GITHUB_TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           aws eks update-kubeconfig \
             --region $AWS_REGION \
@@ -205,8 +206,8 @@ jobs:
           sudo apt-get update && sudo apt-get install lsof
           lsof -i :8080 || echo "No process using port 8080"
           sudo chown $(id -u):$(id -g) /tmp/kubeconfig
-          chmod 600 /tmp/kubeconfig
-          sudo -u ubuntu flux bootstrap github \
+          chmod 777 /tmp/kubeconfig
+          flux bootstrap github \
           --token-auth \
           --kubeconfig=/tmp/kubeconfig \
           --owner=${{ github.event.inputs.OwnerName }} \
