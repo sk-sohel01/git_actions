@@ -197,6 +197,7 @@ jobs:
           export TOKEN=${{ vars.TOKEN }}
           echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
           aws eks update-kubeconfig --region $AWS_REGION --name ${{ github.event.inputs.ClusterName }}
+          kubectl get svc
           sudo -u ubuntu flux bootstrap github \
           --token-auth \
           --owner=${{ github.event.inputs.OwnerName }} \
