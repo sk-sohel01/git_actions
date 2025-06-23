@@ -126,6 +126,16 @@ jobs:
           name: pipeline-state
           path: ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
       
+      - name: upload json to Repo
+        run: |
+          git config user.name "chandirasoodan"
+          git config user.email "akash42jb@gmail.com"
+          git add ./pipeline-state/${{ github.event.inputs.UserName }}-pipeline-state.json
+          git commit -m "added json"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ vars.TOKEN }}
+      
 
   flux-config:
     needs: create-eks
