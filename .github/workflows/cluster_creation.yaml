@@ -134,7 +134,7 @@ jobs:
           cd git_actions
           git add .
           git commit -m "added json"
-          git remote set-url origin https://x-access-token:${{ vars.TOKEN }}@github.com/git_actions.git"
+          git remote set-url origin https://x-access-token:${{ vars.TOKEN }}@github.com/git_actions.git
           git push
         env:
           GITHUB_TOKEN: ${{ vars.TOKEN }}
