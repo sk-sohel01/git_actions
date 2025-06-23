@@ -200,7 +200,7 @@ jobs:
           kubectl get svc
           sudo apt-get update && sudo apt-get install lsof
           lsof -i :8080 || echo "No process using port 8080"
-          flux bootstrap github \
+          sudo -u ubuntu flux bootstrap github \
           --token-auth \
           --owner=${{ github.event.inputs.OwnerName }} \
           --repository=${{ github.event.inputs.OwnerName }}/${{ github.event.inputs.ManifestRepo }} \
