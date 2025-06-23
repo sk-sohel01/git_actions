@@ -207,13 +207,14 @@ jobs:
           lsof -i :8080 || echo "No process using port 8080"
           sudo chown $(id -u):$(id -g) /tmp/kubeconfig
           chmod 777 /tmp/kubeconfig
+          flux uninstall --namespace=flux-system --keep-namespace=true
           flux bootstrap github \
           --token-auth \
           --kubeconfig=/tmp/kubeconfig \
           --owner=${{ github.event.inputs.OwnerName }} \
           --repository=${{ github.event.inputs.OwnerName }}/${{ github.event.inputs.ManifestRepo }} \
           --branch=${{ github.event.inputs.BranchName }} \
-          --path=clusters/staging \
+          --path=clusters/staging/ \
           --personal
           flux get all
 
