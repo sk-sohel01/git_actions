@@ -63,15 +63,7 @@ jobs:
     container: 
       image: ghcr.io/sk-sohel01/gha-agent:latest
 
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets[format('{0}_ACCESS_KEY', github.event.inputs.Environment)] }}
-          aws-secret-access-key: ${{ secrets[format('{0}_SECRET_KEY', github.event.inputs.Environment)] }}
-          aws-region: us-east-1
-          TOKEN: ${{ vars.TOKEN }}
-      
+    steps:      
       - name: Create JSON file (if not exists)
         run: |
           mkdir -p /tmp/pipeline-state
