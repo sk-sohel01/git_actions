@@ -3,5 +3,6 @@
   "NAMESPACE": "demo-namespace",
   "USERNAME": "chandira",
   "MANIFEST_REPO": "demo",
-  "createeks": "success"
+  "createeks": "success",
+  "fluxconfig": "success"
 }
