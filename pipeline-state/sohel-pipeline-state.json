@@ -1,0 +1,7 @@
+{
+  "CLUSTERNAME": "demo-cluster",
+  "NAMESPACE": "demo-namespace",
+  "USERNAME": "sohel",
+  "MANIFEST_REPO": "demo",
+  "createeks": "success"
+}
