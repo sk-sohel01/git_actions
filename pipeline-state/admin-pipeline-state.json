@@ -1,8 +1,8 @@
 {
   "CLUSTERNAME": "default-cluster",
-  "NAMESPACE": "default-namespace",
+  "NAMESPACE": "kirti-namespace",
   "USERNAME": "admin",
-  "MANIFEST_REPO": "cluster_manifests",
+  "MANIFEST_REPO": "chandirasoodan",
   "createeks": "success",
   "fluxconfig": "failed"
 }
