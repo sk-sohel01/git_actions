@@ -81,7 +81,7 @@ jobs:
           git config user.name "chandirasoodan"
           git config user.email "akash42jb@gmail.com"   
         env:
-          GITHUB_TOKEN: ${{ vars.TOKEN }}
+          GITHUB_TOKEN: ${{ vars.GH_TOKEN }}
 
       - name: Create state file (if not exists)
         run: |
@@ -151,10 +151,10 @@ jobs:
           cd git_actions
           git add .
           git commit -m "added json"
-          git remote set-url origin https://x-access-token:${{ vars.TOKEN }}@github.com/chandirasoodan/git_actions.git
+          git remote set-url origin https://x-access-token:${{ vars.GH_TOKEN }}@github.com/chandirasoodan/git_actions.git
           git push
         env:
-          GITHUB_TOKEN: ${{ vars.TOKEN }}
+          GITHUB_TOKEN: ${{ vars.GH_TOKEN }}
       
 
   flux-config:
@@ -194,9 +194,9 @@ jobs:
       - name: flux-bootstarp
         id: flux-bootstarp
         run: |
-          export TOKEN=${{ vars.TOKEN }}
-          export GITHUB_TOKEN=${{ vars.TOKEN }}
-          echo 'GITHUB_TOKEN=${{ vars.TOKEN }}' | sudo tee -a /etc/environment
+          export TOKEN=${{ vars.GH_TOKEN }}
+          export GITHUB_TOKEN=${{ vars.GH_TOKEN }}
+          echo 'GITHUB_TOKEN=${{ vars.GH_TOKEN }}' | sudo tee -a /etc/environment
           aws eks update-kubeconfig \
             --region $AWS_REGION \
             --name ${{ github.event.inputs.ClusterName }} \
@@ -239,8 +239,8 @@ jobs:
           cd git_actions
           git add .
           git commit -m "added json"
-          git remote set-url origin https://x-access-token:${{ vars.TOKEN }}@github.com/chandirasoodan/git_actions.git
+          git remote set-url origin https://x-access-token:${{ vars.GH_TOKEN }}@github.com/chandirasoodan/git_actions.git
           git push
         env:
-          GITHUB_TOKEN: ${{ vars.TOKEN }}
+          GITHUB_TOKEN: ${{ vars.GH_TOKEN }}
 
