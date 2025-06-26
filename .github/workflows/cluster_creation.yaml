@@ -76,10 +76,10 @@ jobs:
 
       - name: pulling statefile from repo
         run: |
-          git clone https://github.com/chandirasoodan/git_actions.git
+          git clone https://github.com/sk-sohel01/git_actions.git
           cd git_actions
-          git config user.name "chandirasoodan"
-          git config user.email "akash42jb@gmail.com"   
+          git config user.name "sk-sohel01"
+          git config user.email "sohel.sk.01.12.94@gmail.com"   
         env:
           GITHUB_TOKEN: ${{ vars.GH_TOKEN }}
 
@@ -151,7 +151,7 @@ jobs:
           cd git_actions
           git add .
           git commit -m "added json"
-          git remote set-url origin https://x-access-token:${{ vars.GH_TOKEN }}@github.com/chandirasoodan/git_actions.git
+          git remote set-url origin https://x-access-token:${{ vars.GH_TOKEN }}@github.com/sk-sohel01/git_actions.git
           git push
         env:
           GITHUB_TOKEN: ${{ vars.GH_TOKEN }}
@@ -175,10 +175,10 @@ jobs:
 
       - name: pulling state file fro repo
         run: |
-          git clone https://github.com/chandirasoodan/git_actions.git
+          git clone https://github.com/sk-sohel01/git_actions.git
           cd git_actions
-          git config user.name "chandirasoodan"
-          git config user.email "akash42jb@gmail.com"
+          git config user.name "sk-sohel01"
+          git config user.email "sohel.sk.01.12.94@gmail.com"
 
       - name: Check if flux-config needs to run
         id: check_flux-config
@@ -239,7 +239,7 @@ jobs:
           cd git_actions
           git add .
           git commit -m "added json"
-          git remote set-url origin https://x-access-token:${{ vars.GH_TOKEN }}@github.com/chandirasoodan/git_actions.git
+          git remote set-url origin https://x-access-token:${{ vars.GH_TOKEN }}@github.com/sk-sohel01/git_actions.git
           git push
         env:
           GITHUB_TOKEN: ${{ vars.GH_TOKEN }}
